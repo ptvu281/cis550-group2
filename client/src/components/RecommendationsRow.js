@@ -8,11 +8,15 @@ export default class RecommendationsRow extends React.Component {
 
 	render() {
 		return (
-			<div className="movieResults">
-				<div className="title">{this.props.title}</div>
-				<div className="id">{this.props.id}</div>
-				<div className="rating">{this.props.rating}</div>
-				<div className="votes">{this.props.votes}</div>
+			<div className="recResults">
+				<div className="plan-id">{this.props.planid}</div>
+				<div className="benefit">{this.props.benefit}</div>
+				<div className="issuer">{this.props.issuer}</div>
+				<div className="network">{this.props.network}</div>
+				<div className="copayoon">{this.props.copayoon}</div>
+				<div className="coinsoon">{this.props.coinsoon}</div>
+				<div className="indv-rate">{this.props.indvrate}</div>
+				<div className="group-rate">{this.props.grouprate}</div>
 			</div>
 		);
 	}

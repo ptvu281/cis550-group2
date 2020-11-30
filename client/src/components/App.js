@@ -4,7 +4,7 @@ import {
 	Route,
 	Switch
 } from 'react-router-dom';
-import Dashboard from './Dashboard';
+import About from './About';
 import Recommendations from './Recommendations';
 import BestGenres from './BestGenres';
 
@@ -19,14 +19,14 @@ export default class App extends React.Component {
 							exact
 							path="/"
 							render={() => (
-								<Dashboard />
+								<About />
 							)}
 						/>
 						<Route
 							exact
-							path="/dashboard"
+							path="/about"
 							render={() => (
-								<Dashboard />
+								<About />
 							)}
 						/>
 						<Route
