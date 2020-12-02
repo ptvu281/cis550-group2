@@ -44,31 +44,43 @@ function getRecs(req, res) {
   var inputAge = req.params.age;
   var inputSmoking = req.params.smoking;
   var inputFamily = req.params.family;
+  // var query = `
+  // SELECT Plan.PlanId AS planid, Benefits.BenefitName AS benefit, "temp" AS issuer, "temp" AS network, Benefits.CopayOutofNetAmount AS copayoon, Benefits.CoinsOutofNet AS coinsoon, Rates.IndividualRate AS indvrate, Couple AS grouprate
+  // FROM Plan JOIN Rates ON Plan.PlanId = Rates.PlanId
+  // JOIN Benefits ON Plan.PlanId = Benefits.PlanId
+  // JOIN FamilyOption ON Plan.PlanId = FamilyOption.PlanId
+  // WHERE Plan.StateCode = "AL" AND
+  // Rates.Age = "21 and over" AND
+  // IndividualRate IS NOT NULL AND
+  // BusinessYear = 2016;`;
   var query = `
-  SELECT Plan.PlanId, Benefits.BenefitName, Benefits.CopayOutofNetAmount, Benefits.CoinsOutofNet, Rates.IndividualRate
+  SELECT Plan.PlanId AS planid, Benefits.BenefitName AS benefit, "temp" AS issuer, "temp" AS network,
+  Benefits.CopayOutofNetAmount AS copayoon, Benefits.CoinsOutofNet AS coinsoon, Rates.IndividualRate AS indvrate, Couple AS grouprate
   FROM Plan JOIN Rates ON Plan.PlanId = Rates.PlanId
   JOIN Benefits ON Plan.PlanId = Benefits.PlanId
-  WHERE Plan.StateCode = "AL" AND
-  Rates.Age = "21 and over" AND
-  IndividualRate IS NOT NULL;`;
+  JOIN FamilyOption ON Plan.PlanId = FamilyOption.PlanId
+  WHERE Plan.StateCode = '${inputLocation}' AND
+  Rates.Age = '${inputAge}' AND
+  IndividualRate IS NOT NULL AND
+  BusinessYear = 2016;`;
   // var query = `
-  // SELECT Plan.PlanId, Benefits.BenefitName, Issuer.IssuerMarketplaceMarketingName, Network.NetworkName, Benefits.CopayOutofNet,
-  // Benefits.CoinsOutofNet, CASE WHEN ${inputSmoking} = "No Smoking"
+  // SELECT Plan.PlanId, Benefits.BenefitName AS benefit, Issuer.IssuerMarketplaceMarketingName AS issuer, Network.NetworkName AS network, Benefits.CopayOutofNet AS copayoon,
+  // Benefits.CoinsOutofNet AS coinsoon, CASE WHEN ${inputSmoking} = "No Smoking"
   //   THEN Rates.IndividualRate
   //   ELSE Rates.IndividualTobaccoRate
-  //   END AS IndividualRate,
-  // CASE WHEN ${inputFamily} = "Couple" THEN Couple END AS GroupRate,
-  // CASE WHEN ${inputFamily} = "Primary Subscriber And One Dependent" THEN PrimarySubscriberAndOneDependent ELSE NULL END AS GroupRate,
-  // CASE WHEN ${inputFamily} = "Primary Subscriber And Two Dependents" THEN PrimarySubscriberAndTwoDependents ELSE NULL END AS GroupRate,
-  // CASE WHEN ${inputFamily} = "Primary Subscriber And Three Or More Dependents" THEN PrimarySubscriberAndThreeOrMoreDependents ELSE NULL END AS GroupRate,
-  // CASE WHEN ${inputFamily} = "Couple And One Dependent" THEN CoupleAndOneDependent ELSE NULL END AS GroupRate,
+  //   END AS indvrate,
+  // CASE WHEN ${inputFamily} = "Couple" THEN Couple ELSE NULL END AS grouprate,
+  // CASE WHEN ${inputFamily} = "Primary Subscriber And One Dependent" THEN PrimarySubscriberAndOneDependent ELSE NULL END AS grouprate,
+  // CASE WHEN ${inputFamily} = "Primary Subscriber And Two Dependents" THEN PrimarySubscriberAndTwoDependents ELSE NULL END AS grouprate,
+  // CASE WHEN ${inputFamily} = "Primary Subscriber And Three Or More Dependents" THEN PrimarySubscriberAndThreeOrMoreDependents ELSE NULL END AS grouprate,
+  // CASE WHEN ${inputFamily} = "Couple And One Dependent" THEN CoupleAndOneDependent ELSE NULL END AS grouprate,
   // FROM Plan JOIN Rates ON Plan.PlanId = Rates.PlanId
   // JOIN Benefits ON Plan.PlanId = Benefits.PlanId
   // JOIN Issuer ON Plan.IssuerId = Issuer.IssuerId
   // JOIN Network ON Issuer.NetworkId = Network.NetworkId
   // JOIN FamilyOption ON FamilyOption.PlanId=Plan.PlanId
   // WHERE Plan.StateCode = ${inputLocation} AND
-  // Rates.Age = ${inputAge} AND
+  // Rates.Age = ${inputAge} AND BusinessYear = '2016'
   // IndividualRate IS NOT NULL ORDER BY Benefits.BenefitName;`;
 
   connection.query(query, function(err, rows, fields){
