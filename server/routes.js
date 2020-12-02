@@ -46,7 +46,10 @@ function getRecs(req, res) {
   var inputFamily = req.params.family;
   var query = `
   SELECT Plan.PlanId AS planid, Benefits.BenefitName AS benefit, "temp issuer" AS issuer, "temp network" AS network,
-  Benefits.CopayOutofNetAmount AS copayoon, Benefits.CoinsOutofNet AS coinsoon, Rates.IndividualRate AS indvrate, Couple AS grouprate
+  Benefits.CopayOutofNetAmount AS copayoon, Benefits.CoinsOutofNet AS coinsoon, CASE WHEN "${inputSmoking}" = "No Smoking"
+    THEN Rates.IndividualRate
+    ELSE Rates.IndividualTobaccoRate
+    END AS indvrate, Couple AS grouprate
   FROM Plan JOIN Rates ON Plan.PlanId = Rates.PlanId
   JOIN Benefits ON Plan.PlanId = Benefits.PlanId
   JOIN FamilyOption ON Plan.PlanId = FamilyOption.PlanId
