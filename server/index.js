@@ -37,7 +37,7 @@ app.get('/genres/:genre', routes.getTopInGenre); // Hint: Replace () => {} with 
 
 
 /* ---- Q2 (Recommendations) ---- */
-app.get('/recommendations/:movieTitle', routes.getRecs)
+app.get('/recommendations/:location/:age/:smoking/:family', routes.getRecs)
 
 
 

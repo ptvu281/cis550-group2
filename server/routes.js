@@ -40,35 +40,26 @@ function getTopInGenre(req, res) {
 
 /* ---- Q2 (Recommendations) ---- */
 function getRecs(req, res) {
-  var inputTitle = req.params.movieTitle;
-  var query = `		WITH TEMP1 AS(
-		select DISTINCT genres.genre 
-		from movies join genres on movies.id = genres.movie_id 
-		where movies.title='${inputTitle}'),
-		
-	TEMP2 AS(
-		SELECT *
-	   	FROM movies join genres on movies.id = genres.movie_id
-		WHERE genres.genre IN (
-		select *
-		FROM TEMP1)),
-		
-	TEMP3 AS(
-		SELECT TEMP2.id, COUNT(genre) AS NUM_GENRE
-		FROM TEMP2
-		GROUP BY TEMP2.id),
-		
-	TEMP4 AS(
-		SELECT *
-		FROM TEMP3
-		WHERE NUM_GENRE >= ALL(
-			SELECT COUNT(genre)
-			FROM TEMP1))
-	SELECT MOVIES.TITLE, MOVIES.ID, MOVIES.RATING, MOVIES.VOTE_COUNT
-  FROM TEMP4 JOIN MOVIES ON TEMP4.ID = MOVIES.ID
-  WHERE MOVIES.TITLE <> '${inputTitle}'
-	ORDER BY MOVIES.RATING DESC, MOVIES.VOTE_COUNT DESC
-	LIMIT 5; `;
+  var inputLocation = req.params.location;
+  var inputAge = req.params.age;
+  var inputSmoking = req.params.smoking;
+  var inputFamily = req.params.family;
+  var query = `
+  SELECT Plan.PlanId, Benefits.BenefitName, Issuer.IssuerMarketplaceMarketingName, Network.NetworkName, Benefits.CopayOutofNet,
+  Benefits.CoinsOutofNet CASE WHEN ${inputSmoking} = “True”
+  THEN Rate.IndividualRate
+  ELSE Rate.IndividualTobaccoRate
+  END AS IndividualRate,
+  Couple, PrimarySubscriberAndOneDependent, PrimarySubscriberAndTwoDependents, PrimarySubscriberAndThreeOrMoreDependents, CoupleAndOneDependent, CoupleAndTwoDependents, CoupleAndThreeOrMoreDependents
+  FROM Plan JOIN Rate ON Plan.PlanId = Rate.PlanId
+  JOIN Benefits ON Plan.PlanId = Benefits.PlanId
+  JOIN Issuer ON Plan.IssuerId = Issuer.IssuerId
+  JOIN Network ON Issuer.NetworkId = Network.NetworkId
+  JOIN FamilyOption ON FamilyOption.PlanId=Plan.PlanId
+  WHERE Plan.StateCode = ${inputLocation} AND
+  Rate.Age = ${inputAge} AND
+  IndividualRate IS NOT NULL AND
+  Plan.BusinessYear = 2016;`;
   connection.query(query, function(err, rows, fields){
     if(err) console.log(err);
     else{
@@ -124,9 +115,9 @@ function bestGenresPerDecade(req, res) {
       GROUP BY GENRE
       ORDER BY AVG_RATING DESC, GENRE
       )
-      SELECT * 
+      SELECT *
       FROM TEMP4 UNION(
-      SELECT * 
+      SELECT *
       FROM TEMP3
       );
   `;
