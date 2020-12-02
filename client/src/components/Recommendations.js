@@ -77,7 +77,7 @@ export default class Recommendations extends React.Component {
 				console.log(recList); //displays your JSON object in the console
 				if (!recList) return;
 				let recDivs = recList.map((recObj, i) =>
-					<RecommendationsRow key={i} planid={recObj.planid} benefit={recObj.benefit} issuer={recObj.issuer}
+					<RecommendationsRow planid={recObj.planid} benefit={recObj.benefit} issuer={recObj.issuer}
 					network={recObj.network} copayoon={recObj.copayoon} coinsoon={recObj.coinsoon} indvrate={recObj.indvrate}
 					grouprate={recObj.grouprate}/>
 				);

@@ -44,17 +44,8 @@ function getRecs(req, res) {
   var inputAge = req.params.age;
   var inputSmoking = req.params.smoking;
   var inputFamily = req.params.family;
-  // var query = `
-  // SELECT Plan.PlanId AS planid, Benefits.BenefitName AS benefit, "temp" AS issuer, "temp" AS network, Benefits.CopayOutofNetAmount AS copayoon, Benefits.CoinsOutofNet AS coinsoon, Rates.IndividualRate AS indvrate, Couple AS grouprate
-  // FROM Plan JOIN Rates ON Plan.PlanId = Rates.PlanId
-  // JOIN Benefits ON Plan.PlanId = Benefits.PlanId
-  // JOIN FamilyOption ON Plan.PlanId = FamilyOption.PlanId
-  // WHERE Plan.StateCode = "AL" AND
-  // Rates.Age = "21 and over" AND
-  // IndividualRate IS NOT NULL AND
-  // BusinessYear = 2016;`;
   var query = `
-  SELECT Plan.PlanId AS planid, Benefits.BenefitName AS benefit, "temp" AS issuer, "temp" AS network,
+  SELECT Plan.PlanId AS planid, Benefits.BenefitName AS benefit, "temp issuer" AS issuer, "temp network" AS network,
   Benefits.CopayOutofNetAmount AS copayoon, Benefits.CoinsOutofNet AS coinsoon, Rates.IndividualRate AS indvrate, Couple AS grouprate
   FROM Plan JOIN Rates ON Plan.PlanId = Rates.PlanId
   JOIN Benefits ON Plan.PlanId = Benefits.PlanId
