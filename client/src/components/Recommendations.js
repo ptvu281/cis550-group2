@@ -17,8 +17,18 @@ export default class Recommendations extends React.Component {
 		let ageList = ["0-20", "21 and over", "Family option"];
 		let ageDivs = ageList.map((ageObj, i) => <option key={i} value={ageObj}>{ageObj}</option>);
 
-		let smokingList = ["Smoking", "No Smoking"];
-		let smokingDivs = smokingList.map((smokeObj, i) => <option key={i} value={smokeObj}>{smokeObj}</option>);
+		let benefitsList = ['Dental - Adult', 'Dental - Child', 'Dental - General',
+		'Hospital Services', 'Surgery', 'Maternity Care', 'Mental Health',
+		'Primary Care', 'Specialist', 'Other Health Services',
+		'Respite/Hospice Care', 'Emergency Services', 'Medication',
+		'Rehabilitation', 'Habilitation', 'Medical Devices/Prosthetics',
+		'Radiology/Laboratory', 'Diagnostic/Preventive',
+		'Complementary Medicine', 'Vision', 'Sexual/Reproductive Health',
+		'Chronic Diseases', 'Clinical Trial', 'Special Circumstances',
+		'Nutrition/Wellness', 'Autism Spectrum', 'Telemedicine',
+		'Alcohol/Tobacco','Other'];
+
+		let benefitsDivs = benefitsList.map((benefitsObj, i) => <option key={i} value={benefitsObj}>{benefitsObj}</option>);
 
 		let familyOptionList = ["Couple", "Primary Subscriber And One Dependent", "Primary Subscriber And Two Dependents",
 		"Primary Subscriber And Three Or More Dependents", "Couple And One Dependent"];
@@ -29,8 +39,8 @@ export default class Recommendations extends React.Component {
 			allLocations: locationDivs,
 			age: "",
 			allAges: ageDivs,
-			smoking: "",
-			allSmokingOptions: smokingDivs,
+			benefit: "",
+			allBenefitOptions: benefitsDivs,
 			familyOption: "",
 			allFamilyOptions: familyOptionDivs, 
 			recList: []
@@ -38,7 +48,7 @@ export default class Recommendations extends React.Component {
 
 		this.handleLocationChange= this.handleLocationChange.bind(this);
 		this.handleAgeChange = this.handleAgeChange.bind(this);
-		this.handleSmokingChange = this.handleSmokingChange.bind(this);
+		this.handleBenefitChange = this.handleBenefitChange.bind(this);
 		this.handleFamilyOptionChange = this.handleFamilyOptionChange.bind(this);
 		this.submitSearch = this.submitSearch.bind(this);
 	}
@@ -55,9 +65,9 @@ export default class Recommendations extends React.Component {
 		});
 	}
 
-	handleSmokingChange(e) {
+	handleBenefitChange(e) {
 		this.setState({
-			smoking: e.target.value
+			benefit: e.target.value
 		});
 	}
 
@@ -77,9 +87,8 @@ export default class Recommendations extends React.Component {
 				console.log(recList); //displays your JSON object in the console
 				if (!recList) return;
 				let recDivs = recList.map((recObj, i) =>
-					<RecommendationsRow key={i} planid={recObj.planid} benefit={recObj.benefit} issuer={recObj.issuer} 
-					network={recObj.network} copayoon={recObj.copayoon} coinsoon={recObj.coinsoon} indvrate={recObj.indvrate}
-					grouprate={recObj.grouprate}/>
+					<RecommendationsRow key={i} planid={recObj.planid} benefit={recObj.benefit} network={recObj.network} 
+					copayoon={recObj.copayoon} coinsoon={recObj.coinsoon} indvrate={recObj.indvrate} grouprate={recObj.grouprate}/>
 				);
 
 				//This saves our HTML representation of the data into the state, which we can call in our render function
@@ -114,9 +123,9 @@ export default class Recommendations extends React.Component {
 			            		{this.state.allAges}
 			            	</select>
 
-							<select value={this.state.location} onChange={this.handleSmokingChange} className="dropdown" id="smokingDropdown">
-			            		<option select value> -- Select Smoking Preference -- </option>
-			            		{this.state.allSmokingOptions}
+							<select value={this.state.benefit} onChange={this.handleBenefitChange} className="dropdown" id="benefitDropdown">
+			            		<option select value> -- Select Benefit Category -- </option>
+			            		{this.state.allBenefitOptions}
 			            	</select>
 
 							<select value={this.state.location} onChange={this.handleFamilyOptionChange} className="dropdown" id="familyDropdown">
@@ -130,8 +139,7 @@ export default class Recommendations extends React.Component {
 			    			<div className="h6">Best Health Insurance Plans for You</div>
 			    			<div className="headers">
 			    				<div className="header"><strong>Plan Id</strong></div>
-			    				<div className="header"><strong>Benefit</strong></div>
-					            <div className="header"><strong>Issuer</strong></div>
+					            <div className="header"><strong>Benefit Name</strong></div>
 					            <div className="header"><strong>Network</strong></div>
 								<div className="header"><strong>Copay Out of Network</strong></div>
 								<div className="header"><strong>Coinsurance Out of Network</strong></div>

@@ -9,8 +9,6 @@ export default class About extends React.Component {
   constructor(props) {
     super(props);
 
-    // The state maintained by this React Component. This component maintains the list of genres,
-    // and a list of movies for a specified genre.
     
   }
 
