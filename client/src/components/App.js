@@ -7,7 +7,6 @@ import {
 import About from './About';
 import Recommendations from './Recommendations';
 import BestGenres from './BestGenres';
-import State from './State';
 
 export default class App extends React.Component {
 
@@ -34,12 +33,6 @@ export default class App extends React.Component {
 							path="/recommendations"
 							render={() => (
 								<Recommendations />
-							)}
-						/>
-						<Route 
-							path="/state"
-							render={() => (
-								<State />
 							)}
 						/>
 						<Route
