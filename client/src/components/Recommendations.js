@@ -128,7 +128,7 @@ export default class Recommendations extends React.Component {
 			            		{this.state.allBenefitOptions}
 			            	</select>
 
-							<select value={this.state.location} onChange={this.handleFamilyOptionChange} className="dropdown" id="familyDropdown">
+							<select value={this.state.familyOption} onChange={this.handleFamilyOptionChange} className="dropdown" id="familyDropdown">
 			            		<option select value> -- Select Family Option -- </option>
 			            		{this.state.allFamilyOptions}
 			            	</select>
