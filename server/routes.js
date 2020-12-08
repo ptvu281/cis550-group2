@@ -45,24 +45,25 @@ function getRecs(req, res) {
   var inputBenefit = req.params.benefit;
   var inputFamily = req.params.family;
   var query = `
-    SELECT Plan.PlanId AS planid, Benefits.BenefitName AS benefit, Network.NetworkName AS network,
+    SELECT DISTINCT Plan.PlanId AS planid, Benefits.BenefitName AS benefit, Network.NetworkName AS network,
     Benefits.CopayOutofNetAmount AS copayoon, Benefits.CoinsOutofNet AS coinsoon, Rates.IndividualRate AS indvrate,
     CASE
-      WHEN '${inputFamily}' = "Couple" THEN FamilyOption.Couple
-      WHEN '${inputFamily}' = "Primary Subscriber And One Dependent" THEN FamilyOption.PrimarySubscriberAndOneDependent
-      WHEN '${inputFamily}' = "Primary Subscriber And Two Dependents" THEN FamilyOption.PrimarySubscriberAndTwoDependents
-      WHEN '${inputFamily}' = "Primary Subscriber And Three Or More Dependents" THEN FamilyOption.PrimarySubscriberAndThreeOrMoreDependents
-      WHEN '${inputFamily}' = "Couple And One Dependent" THEN FamilyOption.CoupleAndOneDependent
+      WHEN '${inputFamily}' = "Couple" THEN IFNULL(FamilyOption.Couple, "No group rate found.")
+      WHEN '${inputFamily}' = "Primary Subscriber And One Dependent" THEN IFNULL(FamilyOption.PrimarySubscriberAndOneDependent, "No group rate found.")
+      WHEN '${inputFamily}' = "Primary Subscriber And Two Dependents" THEN IFNULL(FamilyOption.PrimarySubscriberAndTwoDependents, "No group rate found.")
+      WHEN '${inputFamily}' = "Primary Subscriber And Three Or More Dependents" THEN IFNULL(FamilyOption.PrimarySubscriberAndThreeOrMoreDependents, "No group rate found.")
+      WHEN '${inputFamily}' = "Couple And One Dependent" THEN IFNULL(FamilyOption.CoupleAndOneDependent, "No group rate found.")
       ELSE 'n/a'
     END AS grouprate
     FROM Plan JOIN Rates ON Plan.PlanId = Rates.PlanId
     JOIN Benefits ON Plan.PlanId = Benefits.PlanId
-    JOIN FamilyOption ON Plan.PlanId = FamilyOption.PlanId
+    LEFT OUTER JOIN FamilyOption ON Plan.PlanId = FamilyOption.PlanId
     JOIN Network ON Plan.IssuerId = Network.IssuerId
     WHERE Plan.StateCode = '${inputLocation}' AND
     Rates.Age = '${inputAge}' AND
     Benefits.Category = '${inputBenefit}'
-    AND Plan.BusinessYear = 2016`;
+    AND Plan.BusinessYear = 2016
+    ORDER BY benefit, indvrate ASC, grouprate ASC`;
 
   connection.query(query, function(err, rows, fields){
     if(err) console.log(err);
