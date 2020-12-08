@@ -14,7 +14,7 @@ export default class Recommendations extends React.Component {
 		"RI", "SC", "SD", "TN", "TX", "UT", "VA", "VT", "WA", "WI", "WV","WY"];
 		let locationDivs = locationList.map((locationObj, i) => <option key={i} value={locationObj}>{locationObj}</option>);
 
-		let ageList = ["0-20", "21 and over", "Family option"];
+		let ageList = ["0-20", "21 and over"];
 		let ageDivs = ageList.map((ageObj, i) => <option key={i} value={ageObj}>{ageObj}</option>);
 
 		let benefitsList = ['Dental - Adult', 'Dental - Child', 'Dental - General',
@@ -135,24 +135,30 @@ export default class Recommendations extends React.Component {
 
 			    			<button id="submitMovieBtn" className="submit-btn" onClick={this.submitSearch}>Submit</button>
 			    		</div>
-			    		<div className="header-container">
-			    			<div className="h6">Best Health Insurance Plans for You</div>
-			    			<div className="headers">
-			    				<div className="header"><strong>Plan Id</strong></div>
-					            <div className="header"><strong>Benefit Name</strong></div>
-					            <div className="header"><strong>Network</strong></div>
-								<div className="header"><strong>Copay Out of Network</strong></div>
-								<div className="header"><strong>Coinsurance Out of Network</strong></div>
-								<div className="header"><strong>Individual Rate</strong></div>
-								<div className="header"><strong>Group Rate</strong></div>
-			    			</div>
-			    		</div>
-			    		<div className="results-container" id="results">
-			    			{this.state.recList}
-			    		</div>
+
 			    	</div>
 			    </div>
+
+					<div class="table-wrapper">
+							<table class="fl-table">
+									<thead>
+									<tr>
+											<th>Plan ID</th>
+											<th>Benefit Name</th>
+											<th>Network</th>
+											<th>Copay out of Network</th>
+											<th>Coinsurance out of Network</th>
+											<th>Individual Rate</th>
+											<th>Group Rate</th>
+									</tr>
+									</thead>
+									<tbody>
+									{this.state.recList}
+									</tbody>
+							</table>
+					</div>
 		    </div>
+
 		);
 	}
 }

@@ -53,6 +53,7 @@ function getRecs(req, res) {
       WHEN '${inputFamily}' = "Primary Subscriber And Two Dependents" THEN FamilyOption.PrimarySubscriberAndTwoDependents
       WHEN '${inputFamily}' = "Primary Subscriber And Three Or More Dependents" THEN FamilyOption.PrimarySubscriberAndThreeOrMoreDependents
       WHEN '${inputFamily}' = "Couple And One Dependent" THEN FamilyOption.CoupleAndOneDependent
+      ELSE 'n/a'
     END AS grouprate
     FROM Plan JOIN Rates ON Plan.PlanId = Rates.PlanId
     JOIN Benefits ON Plan.PlanId = Benefits.PlanId
