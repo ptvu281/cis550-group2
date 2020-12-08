@@ -3,6 +3,8 @@
   display: flex;
   flex-flow: row wrap;
   justify-content: flex-start;
+  opacity: 0.5;
+  
   /* border-bottom: 1px solid #ddd; */
 }
 
@@ -15,7 +17,8 @@
 }
 
 .genres-container .genre:hover {
-  background-color: #ddd;
+  background-color: #ffffff;
+  opacity: 1;
 }
 
 .movies-container .movies-header, .results-container .movie {
@@ -31,4 +34,8 @@
 
 .movies-header .header, .movie .rating, .movie .votes {
   flex: 1 0 25%;
+}
+
+.jumbotron {
+  background-color: #e6f2ff !important;
 }

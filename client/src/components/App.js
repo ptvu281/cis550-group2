@@ -6,8 +6,8 @@ import {
 } from 'react-router-dom';
 import About from './About';
 import Recommendations from './Recommendations';
-import BestGenres from './BestGenres';
 import State from './State';
+import Benefit from './Benefit';
 
 export default class App extends React.Component {
 
@@ -43,9 +43,9 @@ export default class App extends React.Component {
 							)}
 						/>
 						<Route
-							path="/bestgenres"
+							path="/benefits"
 							render={() => (
-								<BestGenres />
+								<Benefit />
 							)}
 						/>
 					</Switch>

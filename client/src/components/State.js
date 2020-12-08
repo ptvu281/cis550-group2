@@ -16,7 +16,7 @@ export default class State extends React.Component {
 		"RI", "SC", "SD", "TN", "TX", "UT", "VA", "VT", "WA", "WI", "WV","WY"];
 		let stateDivs = stateList.map((stateObj, i) => <option key={i} value={stateObj}>{stateObj}</option>);
         
-        let yearList = ["1990", "2000", "2010", "2020"];
+        let yearList = ["2014", "2015", "2016"];
 		let yearDivs = yearList.map((yearObj, i) => <option key={i} value={yearObj}>{yearObj}</option>);
         
         this.state = {

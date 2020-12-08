@@ -3,7 +3,6 @@ import '../style/Dashboard.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import PageNavbar from './PageNavbar';
 import GenreButton from './GenreButton';
-import DashboardMovieRow from './DashboardMovieRow';
 
 export default class Dashboard extends React.Component {
   constructor(props) {
@@ -47,25 +46,7 @@ export default class Dashboard extends React.Component {
   /* ---- Q1b (Dashboard) ---- */
   /* Set this.state.movies to a list of <DashboardMovieRow />'s. */
   showMovies(genre) {
-    fetch("http://localhost:8081/genres/" + genre, {
-      method: 'GET' // The type of HTTP request.
-    })
-      .then(res => res.json()) // Convert the response data to a JSON.
-      .then(movieList => {
-        console.log(movieList)
-        if (!movieList) return;
-        // Map each genreObj in movieList to an HTML element:
-        // A button which triggers the showMovies function for each genre.
-        let movieDivs = movieList.map((movieObj, i) =>
-          <DashboardMovieRow key={i} title={movieObj.title} rating={movieObj.rating} voting={movieObj.vote_count}/>
-        );
-
-        // Set the state of the genres list to the value returned by the HTTP response from the server.
-        this.setState({
-          movies: movieDivs
-        })
-      })
-      .catch(err => console.log(err))	// Print the error if there is one.
+  
   }
 
   render() {    

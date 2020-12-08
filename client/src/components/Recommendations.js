@@ -17,8 +17,17 @@ export default class Recommendations extends React.Component {
 		let ageList = ["0-20", "21 and over", "Family option"];
 		let ageDivs = ageList.map((ageObj, i) => <option key={i} value={ageObj}>{ageObj}</option>);
 
-		let smokingList = ["Smoking", "No Smoking"];
-		let smokingDivs = smokingList.map((smokeObj, i) => <option key={i} value={smokeObj}>{smokeObj}</option>);
+		let benefitList = ['Dental - Adult', 'Dental - Child', 'Dental - General',
+		 'Surgery', 'Maternity Care', 'Mental Health',
+		'Primary Care', 'Specialist', 'Hospital Services','Emergency Services','Other Health Services',
+		'Respite/Hospice Care', 'Medication',
+		'Rehabilitation', 'Habilitation', 'Medical Devices/Prosthetics',
+		'Radiology/Laboratory', 'Diagnostic/Preventive',
+		'Complementary Medicine', 'Vision', 'Sexual/Reproductive Health',
+		'Chronic Diseases', 'Clinical Trial', 'Special Circumstances',
+		'Nutrition/Wellness', 'Autism Spectrum', 'Telemedicine',
+		'Alcohol/Tobacco','Other'];
+		let benefitDivs = benefitList.map((benefitObj, i) => <option key={i} value={benefitObj}>{benefitObj}</option>);
 
 		let familyOptionList = ["Couple", "Primary Subscriber And One Dependent", "Primary Subscriber And Two Dependents",
 		"Primary Subscriber And Three Or More Dependents", "Couple And One Dependent"];
@@ -29,8 +38,8 @@ export default class Recommendations extends React.Component {
 			allLocations: locationDivs,
 			age: "",
 			allAges: ageDivs,
-			smoking: "",
-			allSmokingOptions: smokingDivs,
+			benefit: "",
+			allBenefitOptions: benefitDivs,
 			familyOption: "",
 			allFamilyOptions: familyOptionDivs, 
 			recList: []
@@ -38,7 +47,7 @@ export default class Recommendations extends React.Component {
 
 		this.handleLocationChange= this.handleLocationChange.bind(this);
 		this.handleAgeChange = this.handleAgeChange.bind(this);
-		this.handleSmokingChange = this.handleSmokingChange.bind(this);
+		this.handleBenefitChange = this.handleBenefitChange.bind(this);
 		this.handleFamilyOptionChange = this.handleFamilyOptionChange.bind(this);
 		this.submitSearch = this.submitSearch.bind(this);
 	}
@@ -55,9 +64,9 @@ export default class Recommendations extends React.Component {
 		});
 	}
 
-	handleSmokingChange(e) {
+	handleBenefitChange(e) {
 		this.setState({
-			smoking: e.target.value
+			benefit: e.target.value
 		});
 	}
 
@@ -77,7 +86,7 @@ export default class Recommendations extends React.Component {
 				console.log(recList); //displays your JSON object in the console
 				if (!recList) return;
 				let recDivs = recList.map((recObj, i) =>
-					<RecommendationsRow key={i} planid={recObj.planid} benefit={recObj.benefit} issuer={recObj.issuer} 
+					<RecommendationsRow key={i} planid={recObj.planid} benefit={recObj.benefit}  
 					network={recObj.network} copayoon={recObj.copayoon} coinsoon={recObj.coinsoon} indvrate={recObj.indvrate}
 					grouprate={recObj.grouprate}/>
 				);
@@ -114,12 +123,12 @@ export default class Recommendations extends React.Component {
 			            		{this.state.allAges}
 			            	</select>
 
-							<select value={this.state.location} onChange={this.handleSmokingChange} className="dropdown" id="smokingDropdown">
-			            		<option select value> -- Select Smoking Preference -- </option>
-			            		{this.state.allSmokingOptions}
+							<select value={this.state.benefit} onChange={this.handleBenefitChange} className="dropdown" id="benefitDropdown">
+			            		<option select value> -- Select Benefit Category -- </option>
+			            		{this.state.allBenefitOptions}
 			            	</select>
 
-							<select value={this.state.location} onChange={this.handleFamilyOptionChange} className="dropdown" id="familyDropdown">
+							<select value={this.state.familyOption} onChange={this.handleFamilyOptionChange} className="dropdown" id="familyDropdown">
 			            		<option select value> -- Select Family Option -- </option>
 			            		{this.state.allFamilyOptions}
 			            	</select>
@@ -131,7 +140,6 @@ export default class Recommendations extends React.Component {
 			    			<div className="headers">
 			    				<div className="header"><strong>Plan Id</strong></div>
 			    				<div className="header"><strong>Benefit</strong></div>
-					            <div className="header"><strong>Issuer</strong></div>
 					            <div className="header"><strong>Network</strong></div>
 								<div className="header"><strong>Copay Out of Network</strong></div>
 								<div className="header"><strong>Coinsurance Out of Network</strong></div>
