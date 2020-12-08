@@ -6,7 +6,8 @@ import {
 } from 'react-router-dom';
 import About from './About';
 import Recommendations from './Recommendations';
-import BestGenres from './BestGenres';
+import State from './State';
+import Benefit from './Benefit';
 
 export default class App extends React.Component {
 
@@ -35,10 +36,16 @@ export default class App extends React.Component {
 								<Recommendations />
 							)}
 						/>
-						<Route
-							path="/bestgenres"
+						<Route 
+							path="/state"
 							render={() => (
-								<BestGenres />
+								<State />
+							)}
+						/>
+						<Route
+							path="/benefits"
+							render={() => (
+								<Benefit />
 							)}
 						/>
 					</Switch>
