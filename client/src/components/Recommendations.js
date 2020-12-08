@@ -33,7 +33,7 @@ export default class Recommendations extends React.Component {
 		let familyOptionList = ["Couple", "Primary Subscriber And One Dependent", "Primary Subscriber And Two Dependents",
 		"Primary Subscriber And Three Or More Dependents", "Couple And One Dependent"];
 		let familyOptionDivs = familyOptionList.map((famObj, i) => <option key={i} value={famObj}>{famObj}</option>);
-	
+
 		this.state = {
 			location: "",
 			allLocations: locationDivs,
@@ -42,7 +42,7 @@ export default class Recommendations extends React.Component {
 			benefit: "",
 			allBenefitOptions: benefitsDivs,
 			familyOption: "",
-			allFamilyOptions: familyOptionDivs, 
+			allFamilyOptions: familyOptionDivs,
 			recList: []
 		};
 
@@ -79,7 +79,7 @@ export default class Recommendations extends React.Component {
 
 	// Will need to further modify link.
 	submitSearch() {
-		fetch("http://localhost:8081/recommendations/" + this.state.age, {
+		fetch("http://localhost:8081/recommendations/" + this.state.location + "/" + this.state.age + "/" + this.state.benefit + "/" + this.state.familyOption, {
 			method: "GET"
 		})
 			.then(res => res.json())
@@ -87,7 +87,7 @@ export default class Recommendations extends React.Component {
 				console.log(recList); //displays your JSON object in the console
 				if (!recList) return;
 				let recDivs = recList.map((recObj, i) =>
-					<RecommendationsRow key={i} planid={recObj.planid} benefit={recObj.benefit} network={recObj.network} 
+					<RecommendationsRow key={i} planid={recObj.planid} benefit={recObj.benefit} network={recObj.network}
 					copayoon={recObj.copayoon} coinsoon={recObj.coinsoon} indvrate={recObj.indvrate} grouprate={recObj.grouprate}/>
 				);
 
@@ -98,9 +98,9 @@ export default class Recommendations extends React.Component {
 			})
 			.catch(err => console.log(err))
 	}
-	
 
-	
+
+
 	render() {
 
 		return (
