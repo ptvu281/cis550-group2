@@ -44,29 +44,30 @@ function getRecs(req, res) {
   })
 };
 
+//This is very long and takes 9 seconds. We should try to cut this down somehow.
 function getBen1(req, res) {
   var inputYear = req.params.selectedYear;
   var inputOpt = req.params.selectedOption;
   var query = `
     WITH max_avg_copay AS
-    (SELECT Category, BenefitName, CAST(AVG(CopayOutofNetAmount) AS DECIMAL(10,2)) AS avg, 0 AS cnt, "Most Expensive Benefits" AS table_type
-    FROM Benefits
+    (SELECT Category, BenefitName, CAST(AVG(IndividualRate) AS DECIMAL(10,2)) AS avg, 0 AS cnt, "Most Expensive Benefits" AS table_type
+    FROM Benefits JOIN Rates ON Rates.PlanId = Benefits.PlanId
     WHERE BusinessYear = '${inputYear}'
     GROUP BY BenefitName
     ORDER BY avg DESC
     LIMIT 5),
 
     min_avg_copay AS
-    (SELECT Category,  BenefitName, CAST(AVG(CopayOutofNetAmount) AS DECIMAL(10,2)) AS avg, COUNT(BenefitName) AS cnt, "Most Affordable Benefits" AS table_type
-    FROM Benefits
+    (SELECT Category,  BenefitName, CAST(AVG(IndividualRate) AS DECIMAL(10,2)) AS avg, COUNT(BenefitName) AS cnt, "Most Affordable Benefits" AS table_type
+    FROM Benefits JOIN Rates ON Rates.PlanId = Benefits.PlanId
     WHERE BusinessYear = '${inputYear}'
     GROUP BY BenefitName
     ORDER BY avg ASC, cnt DESC
     LIMIT 5),
 
     freq_benefits AS
-    (SELECT Category,  BenefitName,  CAST(AVG(CopayOutofNetAmount) AS DECIMAL(10,2)) AS avg, COUNT(BenefitName) AS cnt, "Most Frequent Benefits" AS table_type
-    FROM Benefits
+    (SELECT Category,  BenefitName,  CAST(AVG(IndividualRate) AS DECIMAL(10,2)) AS avg, COUNT(BenefitName) AS cnt, "Most Frequent Benefits" AS table_type
+    FROM Benefits JOIN Rates ON Rates.PlanId = Benefits.PlanId
     WHERE BusinessYear = '${inputYear}'
     GROUP BY BenefitName
     ORDER BY cnt DESC
@@ -91,8 +92,54 @@ function getBen1(req, res) {
   })
 };
 
+function getBen2(req, res) {
+  var inputBenefit = req.params.selectedBenefit;
+  var inputStats = req.params.selectedStats;
+  var query = `
+  WITH 2014_stats AS
+  (SELECT
+  CASE
+  WHEN	 '${inputStats}' = 'Average' THEN CAST(AVG(IndividualRate) AS DECIMAL(10,2))
+  WHEN '${inputStats}' = 'Min' THEN CAST(MIN(IndividualRate) AS DECIMAL(10,2))
+  WHEN '${inputStats}' = 'Max' THEN CAST(MAX(IndividualRate) AS DECIMAL(10,2))
+  END AS four
+  FROM Benefits JOIN Rates ON Rates.PlanId = Benefits.PlanId
+  WHERE Benefits.Category = '${inputBenefit}' AND BusinessYear = 2014),
+
+  2015_stats AS
+  (SELECT
+  CASE
+  WHEN	 '${inputStats}' = 'Average' THEN CAST(AVG(IndividualRate) AS DECIMAL(10,2))
+  WHEN '${inputStats}' = 'Min' THEN CAST(MIN(IndividualRate) AS DECIMAL(10,2))
+  WHEN '${inputStats}' = 'Max' THEN CAST(MAX(IndividualRate) AS DECIMAL(10,2))
+  END AS five
+  FROM Benefits JOIN Rates ON Rates.PlanId = Benefits.PlanId
+  WHERE Benefits.Category = '${inputBenefit}' AND BusinessYear = 2015),
+
+  2016_stats AS
+  (SELECT
+  CASE
+  WHEN	 '${inputStats}' = 'Average' THEN CAST(AVG(IndividualRate) AS DECIMAL(10,2))
+  WHEN '${inputStats}' = 'Min' THEN CAST(MIN(IndividualRate) AS DECIMAL(10,2))
+  WHEN '${inputStats}' = 'Max' THEN CAST(MAX(IndividualRate) AS DECIMAL(10,2))
+  END AS six
+  FROM Benefits JOIN Rates ON Rates.PlanId = Benefits.PlanId
+  WHERE Benefits.Category = '${inputBenefit}' AND BusinessYear = 2016)
+
+  SELECT 2014_stats.four, 2015_stats.five, 2016_stats.six
+  FROM 2014_stats, 2015_stats, 2016_stats`;
+
+  connection.query(query, function(err, rows, fields){
+    if(err) console.log(err);
+    else{
+      res.json(rows)
+    }
+  })
+};
+
 // The exported functions, which can be accessed in index.js.
 module.exports = {
 	getRecs: getRecs,
-  getBen1: getBen1
+  getBen1: getBen1,
+  getBen2: getBen2
 }

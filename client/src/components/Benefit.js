@@ -1,6 +1,7 @@
 import React from 'react';
 import PageNavbar from './PageNavbar';
 import BenefitRow1 from './BenefitRow1';
+import BenefitRow2 from './BenefitRow2';
 import '../style/Recommendations.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 //Bootstrap and jQuery libraries
@@ -91,7 +92,7 @@ export default class Benefit extends React.Component {
         	console.log(ben1List); //displays your JSON object in the console
         	if (!ben1List) return;
         	let ben1Divs = ben1List.map((ben1Obj, i) =>
-        		<BenefitRow1 key={i} category={ben1Obj.Category} name={ben1Obj.BenefitName} avg_copay={ben1Obj.avg}/>
+        		<BenefitRow1 key={i} category={ben1Obj.Category} name={ben1Obj.BenefitName} avg_rate={ben1Obj.avg}/>
         	);
         	//This saves our HTML representation of the data into the state, which we can call in our render function
         	this.setState({
@@ -102,8 +103,23 @@ export default class Benefit extends React.Component {
     }
 
     submitSecondSearch() {
-
-    }
+      fetch("http://localhost:8081/ben2/" + this.state.selectedBenefit + "/" + this.state.selectedStats, {
+        method: "GET"
+      })
+        .then(res => res.json())
+        .then(ben2List => {
+          console.log(ben2List); //displays your JSON object in the console
+          if (!ben2List) return;
+          let ben2Divs = ben2List.map((ben2Obj, i) =>
+            <BenefitRow2 key={i} four={ben2Obj.four} five={ben2Obj.five} six={ben2Obj.six}/>
+          );
+          //This saves our HTML representation of the data into the state, which we can call in our render function
+          this.setState({
+            ben2List: ben2Divs
+          });
+        })
+        .catch(err => console.log(err))
+      }
 
 
     render() {
@@ -139,7 +155,7 @@ export default class Benefit extends React.Component {
               									<tr>
               											<th>Benefit Category</th>
               											<th>Benefit Name</th>
-              											<th>Average Copay out of Net</th>
+              											<th>Average Individual Rate</th>
               									</tr>
               									</thead>
               									<tbody>
@@ -169,14 +185,20 @@ export default class Benefit extends React.Component {
                 </div>
                 <br/>
                 <div className="movies-container">
-                  <div className="movies-header">
-                    <div className="header"><strong>2014</strong></div>
-                    <div className="header"><strong>2015</strong></div>
-                    <div className="header"><strong>2016</strong></div>
-                  </div>
-                  <div className="results-container" id="results">
-                    {this.state.pricesResults}
-                  </div>
+                <div class="table-wrapper">
+                    <table id='dtable' class="fl-table">
+                        <thead>
+                        <tr>
+                            <th>2014</th>
+                            <th>2015</th>
+                            <th>2016</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {this.state.ben2List}
+                        </tbody>
+                    </table>
+                </div>
                 </div>
               </div>
             </div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-export default class BenefitRow1 extends React.Component {
+export default class BenefitRow2 extends React.Component {
 	constructor(props) {
 		super(props);
 	}
@@ -9,9 +9,9 @@ export default class BenefitRow1 extends React.Component {
 	render() {
 		return (
 			<tr>
-					<td>{this.props.category}</td>
-					<td>{this.props.name}</td>
-					<td>{this.props.avg_rate}</td>
+					<td>{this.props.four}</td>
+					<td>{this.props.five}</td>
+					<td>{this.props.six}</td>
 			</tr>
 		);
 	}

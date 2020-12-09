@@ -16,7 +16,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 /* ---- ONES WE ACTUALLY USE CLEAN UP REST WHEN DONE ---- */
 app.get('/recommendations/:location/:age/:benefit/:family', routes.getRecs);
 app.get('/ben1/:selectedYear/:selectedOption', routes.getBen1);
-
+app.get('/ben2/:selectedBenefit/:selectedStats', routes.getBen2);
 
 
 
