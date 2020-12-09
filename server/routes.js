@@ -16,15 +16,14 @@ function getRecs(req, res) {
   var inputFamily = req.params.family;
   var query = `
     SELECT DISTINCT Plan.PlanId AS planid, Benefits.BenefitName AS benefit, Network.NetworkName AS network,
-    Benefits.CopayOutofNetAmount AS copayoon, Benefits.CoinsOutofNet AS coinsoon, CAST(AVG(Rates.IndividualRate) AS DECIMAL(10,2)) AS indvrate,
+    Benefits.CopayOutofNetAmount AS copayoon, Benefits.CoinsOutofNet AS coinsoon, Rates.IndividualRate AS indvrate,
     CASE
-      WHEN '${inputFamily}' = "Not Applicable" THEN "No group rate selected."
-      WHEN '${inputFamily}' = "Couple" THEN IFNULL(CAST(AVG(FamilyOption.Couple) AS DECIMAL(10,2)), "No group rate found.")
-      WHEN '${inputFamily}' = "Primary Subscriber And One Dependent" THEN IFNULL(CAST(AVG(FamilyOption.PrimarySubscriberAndOneDependent) AS DECIMAL(10,2)), "No group rate found.")
-      WHEN '${inputFamily}' = "Primary Subscriber And Two Dependents" THEN IFNULL(CAST(AVG(FamilyOption.PrimarySubscriberAndTwoDependents) AS DECIMAL(10,2)), "No group rate found.")
-      WHEN '${inputFamily}' = "Primary Subscriber And Three Or More Dependents" THEN IFNULL(CAST(AVG(FamilyOption.PrimarySubscriberAndThreeOrMoreDependents) AS DECIMAL(10,2)), "No group rate found.")
-      WHEN '${inputFamily}' = "Couple And One Dependent" THEN IFNULL(CAST(AVG(FamilyOption.CoupleAndOneDependent) AS DECIMAL(10,2)), "No group rate found.")
-      ELSE 'n/a'
+      WHEN '${inputFamily}' = "Couple" THEN IFNULL(FamilyOption.Couple, "No group rate found.")
+      WHEN '${inputFamily}' = "Primary Subscriber And One Dependent" THEN IFNULL(FamilyOption.PrimarySubscriberAndOneDependent, "No group rate found.")
+      WHEN '${inputFamily}' = "Primary Subscriber And Two Dependents" THEN IFNULL(FamilyOption.PrimarySubscriberAndTwoDependents, "No group rate found.")
+      WHEN '${inputFamily}' = "Primary Subscriber And Three Or More Dependents" THEN IFNULL(FamilyOption.PrimarySubscriberAndThreeOrMoreDependents, "No group rate found.")
+      WHEN '${inputFamily}' = "Couple And One Dependent" THEN IFNULL(FamilyOption.CoupleAndOneDependent, "No group rate found.")
+      ELSE 'Not Applicable'
     END AS grouprate
     FROM Plan JOIN Rates ON Plan.PlanId = Rates.PlanId
     JOIN Benefits ON Plan.PlanId = Benefits.PlanId
