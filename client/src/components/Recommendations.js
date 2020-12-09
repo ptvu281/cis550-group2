@@ -37,7 +37,7 @@ export default class Recommendations extends React.Component {
 
 		let benefitsDivs = benefitsList.map((benefitsObj, i) => <option key={i} value={benefitsObj}>{benefitsObj}</option>);
 
-		let familyOptionList = ["Couple", "Primary Subscriber And One Dependent", "Primary Subscriber And Two Dependents",
+		let familyOptionList = ["Not Applicable", "Couple", "Primary Subscriber And One Dependent", "Primary Subscriber And Two Dependents",
 		"Primary Subscriber And Three Or More Dependents", "Couple And One Dependent"];
 		let familyOptionDivs = familyOptionList.map((famObj, i) => <option key={i} value={famObj}>{famObj}</option>);
 
@@ -120,7 +120,8 @@ export default class Recommendations extends React.Component {
             { "data" : "coinsoon" },
             { "data" : "indvrate" },
             { "data" : "grouprate" }
-        ]
+        ],
+				responsive: true
     }))
 	}
 	//
@@ -130,6 +131,7 @@ export default class Recommendations extends React.Component {
 				$('#dtable').DataTable();
 		// });
 	}
+
 	render() {
 		return (
 			<div className="Recommendations">

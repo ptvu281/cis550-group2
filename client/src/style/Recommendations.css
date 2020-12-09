@@ -51,6 +51,7 @@ h2{
     max-width: 100%;
     white-space: nowrap;
     background-color: white;
+    table-layout: fixed;
 }
 
 .fl-table td, .fl-table th {

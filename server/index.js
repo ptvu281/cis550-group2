@@ -13,48 +13,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 /* ---------------------------------------------------------------- */
 
 
-
-
-/* ---- (Dashboard) ---- */
-// The route localhost:8081/genres is registered to the function
-// routes.getAllGenres, specified in routes.js.
-app.get('/genres', routes.getAllGenres);
-
-
-
-
-
-
-/* ---- Q1b (Dashboard) ---- */
-app.get('/genres/:genre', routes.getTopInGenre); // Hint: Replace () => {} with the appropriate route handler.
-
-
-
-
-
-
-
-
-/* ---- Q2 (Recommendations) ---- */
-app.get('/recommendations/:location/:age/:benefit/:family', routes.getRecs)
-
-
-
-
-
-/* ---- (Best Genre) ---- */
-app.get('/decades', routes.getDecades);
-
-
-
-
-
-
-/* ---- Q3b (Best Genre) ---- */
-app.get('/bestgenres/:decades', routes.bestGenresPerDecade);
-
-
-
+/* ---- ONES WE ACTUALLY USE CLEAN UP REST WHEN DONE ---- */
+app.get('/recommendations/:location/:age/:benefit/:family', routes.getRecs);
+app.get('/ben1/:selectedYear/:selectedOption', routes.getBen1);
 
 
 

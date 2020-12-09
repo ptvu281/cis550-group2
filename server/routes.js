@@ -8,37 +8,7 @@ var connection = mysql.createPool(config);
 /* ------------------- Route Handlers --------------- */
 /* -------------------------------------------------- */
 
-
-/* ---- Q1a (Dashboard) ---- */
-function getAllGenres(req, res) {
-  var query = `SELECT DISTINCT genre FROM Genres;`;
-  console.log(query)
-  connection.query(query, function(err, rows, fields){
-    if (err) console.log(err);
-    else{
-      console.log(rows)
-      res.json(rows);
-    }
-  });
-};
-
-
-/* ---- Q1b (Dashboard) ---- */
-function getTopInGenre(req, res) {
-  var inputGenre = req.params.genre;
-  var query = `SELECT Movies.title, Movies.rating, Movies.vote_count FROM Movies JOIN Genres ON Movies.id = Genres.movie_id \
-    WHERE Genres.genre = '${inputGenre}' ORDER BY MOVIES.RATING DESC, MOVIES.VOTE_COUNT DESC
-    LIMIT 10;`;
-  connection.query(query, function(err, rows, fields){
-    if(err) console.log(err);
-    else{
-      res.json(rows)
-    }
-  })
-
-};
-
-/* ---- (Recommendations Page) ---- */
+/* ---- ONES WE ACTUALLY USE CLEAN UP REST LATER ---- */
 function getRecs(req, res) {
   var inputLocation = req.params.location;
   var inputAge = req.params.age;
@@ -46,13 +16,14 @@ function getRecs(req, res) {
   var inputFamily = req.params.family;
   var query = `
     SELECT DISTINCT Plan.PlanId AS planid, Benefits.BenefitName AS benefit, Network.NetworkName AS network,
-    Benefits.CopayOutofNetAmount AS copayoon, Benefits.CoinsOutofNet AS coinsoon, Rates.IndividualRate AS indvrate,
+    Benefits.CopayOutofNetAmount AS copayoon, Benefits.CoinsOutofNet AS coinsoon, CAST(AVG(Rates.IndividualRate) AS DECIMAL(10,2)) AS indvrate,
     CASE
-      WHEN '${inputFamily}' = "Couple" THEN IFNULL(FamilyOption.Couple, "No group rate found.")
-      WHEN '${inputFamily}' = "Primary Subscriber And One Dependent" THEN IFNULL(FamilyOption.PrimarySubscriberAndOneDependent, "No group rate found.")
-      WHEN '${inputFamily}' = "Primary Subscriber And Two Dependents" THEN IFNULL(FamilyOption.PrimarySubscriberAndTwoDependents, "No group rate found.")
-      WHEN '${inputFamily}' = "Primary Subscriber And Three Or More Dependents" THEN IFNULL(FamilyOption.PrimarySubscriberAndThreeOrMoreDependents, "No group rate found.")
-      WHEN '${inputFamily}' = "Couple And One Dependent" THEN IFNULL(FamilyOption.CoupleAndOneDependent, "No group rate found.")
+      WHEN '${inputFamily}' = "Not Applicable" THEN "No group rate selected."
+      WHEN '${inputFamily}' = "Couple" THEN IFNULL(CAST(AVG(FamilyOption.Couple) AS DECIMAL(10,2)), "No group rate found.")
+      WHEN '${inputFamily}' = "Primary Subscriber And One Dependent" THEN IFNULL(CAST(AVG(FamilyOption.PrimarySubscriberAndOneDependent) AS DECIMAL(10,2)), "No group rate found.")
+      WHEN '${inputFamily}' = "Primary Subscriber And Two Dependents" THEN IFNULL(CAST(AVG(FamilyOption.PrimarySubscriberAndTwoDependents) AS DECIMAL(10,2)), "No group rate found.")
+      WHEN '${inputFamily}' = "Primary Subscriber And Three Or More Dependents" THEN IFNULL(CAST(AVG(FamilyOption.PrimarySubscriberAndThreeOrMoreDependents) AS DECIMAL(10,2)), "No group rate found.")
+      WHEN '${inputFamily}' = "Couple And One Dependent" THEN IFNULL(CAST(AVG(FamilyOption.CoupleAndOneDependent) AS DECIMAL(10,2)), "No group rate found.")
       ELSE 'n/a'
     END AS grouprate
     FROM Plan JOIN Rates ON Plan.PlanId = Rates.PlanId
@@ -73,73 +44,55 @@ function getRecs(req, res) {
   })
 };
 
-/* ---- (Best Genres) ---- */
-function getDecades(req, res) {
-	var query = `
-    SELECT DISTINCT (FLOOR(year/10)*10) AS decade
-    FROM (
-      SELECT DISTINCT release_year as year
-      FROM Movies
-      ORDER BY release_year
-    ) y
-  `;
-  connection.query(query, function(err, rows, fields) {
-    if (err) console.log(err);
-    else {
-      res.json(rows);
-    }
-  });
-}
-
-/* ---- Q3 (Best Genres) ---- */
-function bestGenresPerDecade(req, res) {
-  var inputDecades = req.params.decades;
-  console.log(inputDecades);
+function getBen1(req, res) {
+  var inputYear = req.params.selectedYear;
+  var inputOpt = req.params.selectedOption;
   var query = `
-    WITH TEMP1 AS(
-      SELECT *
-      FROM movies
-      WHERE release_year >='${inputDecades}' AND release_year < (${inputDecades}+10)
-      ),
-      TEMP2 AS(
-      SELECT TEMP1.ID, TEMP1.RATING, GENRES.GENRE
-      FROM TEMP1 JOIN GENRES ON TEMP1.ID = GENRES.MOVIE_ID
-      ),
-      TEMP3 AS(
-      SELECT DISTINCT GENRE, 0 AS AVG_RATING
-      FROM GENRES
-      WHERE GENRE NOT IN(
-        SELECT GENRE
-        FROM TEMP2
-      )
-      ORDER BY GENRE
-      ),
-      TEMP4 AS(
-      SELECT GENRE, AVG(RATING) AS AVG_RATING
-      FROM TEMP2
-      GROUP BY GENRE
-      ORDER BY AVG_RATING DESC, GENRE
-      )
-      SELECT *
-      FROM TEMP4 UNION(
-      SELECT *
-      FROM TEMP3
-      );
-  `;
-  connection.query(query, function(err, rows, fields) {
-    if (err) console.log(err);
-    else {
-      console.log(rows);
-      res.json(rows);
+    WITH max_avg_copay AS
+    (SELECT Category, BenefitName, CAST(AVG(CopayOutofNetAmount) AS DECIMAL(10,2)) AS avg, 0 AS cnt, "Most Expensive Benefits" AS table_type
+    FROM Benefits
+    WHERE BusinessYear = '${inputYear}'
+    GROUP BY BenefitName
+    ORDER BY avg DESC
+    LIMIT 5),
+
+    min_avg_copay AS
+    (SELECT Category,  BenefitName, CAST(AVG(CopayOutofNetAmount) AS DECIMAL(10,2)) AS avg, COUNT(BenefitName) AS cnt, "Most Affordable Benefits" AS table_type
+    FROM Benefits
+    WHERE BusinessYear = '${inputYear}'
+    GROUP BY BenefitName
+    ORDER BY avg ASC, cnt DESC
+    LIMIT 5),
+
+    freq_benefits AS
+    (SELECT Category,  BenefitName,  CAST(AVG(CopayOutofNetAmount) AS DECIMAL(10,2)) AS avg, COUNT(BenefitName) AS cnt, "Most Frequent Benefits" AS table_type
+    FROM Benefits
+    WHERE BusinessYear = '${inputYear}'
+    GROUP BY BenefitName
+    ORDER BY cnt DESC
+    LIMIT 5),
+
+    big_table AS
+    (SELECT * FROM freq_benefits
+    UNION
+    SELECT * FROM min_avg_copay
+    UNION
+    SELECT * FROM max_avg_copay)
+
+    SELECT Category, BenefitName, avg
+    FROM big_table
+    WHERE  big_table.table_type = '${inputOpt}'`;
+
+  connection.query(query, function(err, rows, fields){
+    if(err) console.log(err);
+    else{
+      res.json(rows)
     }
-  });
+  })
 };
 
 // The exported functions, which can be accessed in index.js.
 module.exports = {
-	getAllGenres: getAllGenres,
-	getTopInGenre: getTopInGenre,
 	getRecs: getRecs,
-	getDecades: getDecades,
-  bestGenresPerDecade: bestGenresPerDecade
+  getBen1: getBen1
 }

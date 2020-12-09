@@ -1,7 +1,15 @@
 import React from 'react';
 import PageNavbar from './PageNavbar';
+import BenefitRow1 from './BenefitRow1';
 import '../style/Recommendations.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+//Bootstrap and jQuery libraries
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'jquery/dist/jquery.min.js';
+//Datatable Modules
+import "datatables.net-dt/js/dataTables.dataTables"
+import "datatables.net-dt/css/jquery.dataTables.min.css"
+import $ from 'jquery';
 
 export default class Benefit extends React.Component {
     constructor(props) {
@@ -24,11 +32,11 @@ export default class Benefit extends React.Component {
 		'Nutrition/Wellness', 'Autism Spectrum', 'Telemedicine',
 		'Alcohol/Tobacco','Other'];
 	  let benefitDivs = benefitList.map((benefitObj, i) => <option key={i} value={benefitObj}>{benefitObj}</option>);
-      
+
       let statsList = ['Average', 'Min', 'Max'];
       let statsDiv = statsList.map((statsObj, i) => <option key={i} value={statsObj}>{statsObj}</option>);
 
-  
+
       this.state = {
         allYears: yearDivs,
         selectedYear: "",
@@ -46,6 +54,8 @@ export default class Benefit extends React.Component {
       this.handleOptionChange = this.handleOptionChange.bind(this);
       this.handleBenefitChange = this.handleBenefitChange.bind(this);
       this.handleStatsChange = this.handleStatsChange.bind(this);
+      this.submitFirstSearch = this.submitFirstSearch.bind(this);
+      this.submitSecondSearch = this.submitSecondSearch.bind(this);
     }
 
     handleYearChange(e) {
@@ -73,7 +83,22 @@ export default class Benefit extends React.Component {
     }
 
     submitFirstSearch() {
-
+      fetch("http://localhost:8081/ben1/" + this.state.selectedYear + "/" + this.state.selectedOption, {
+        method: "GET"
+      })
+        .then(res => res.json())
+        .then(ben1List => {
+        	console.log(ben1List); //displays your JSON object in the console
+        	if (!ben1List) return;
+        	let ben1Divs = ben1List.map((ben1Obj, i) =>
+        		<BenefitRow1 key={i} category={ben1Obj.Category} name={ben1Obj.BenefitName} avg_copay={ben1Obj.avg}/>
+        	);
+        	//This saves our HTML representation of the data into the state, which we can call in our render function
+        	this.setState({
+        		ben1List: ben1Divs
+        	});
+        })
+        .catch(err => console.log(err))
     }
 
     submitSecondSearch() {
@@ -81,17 +106,17 @@ export default class Benefit extends React.Component {
     }
 
 
-    render() {    
+    render() {
         return (
           <div className="Dashboard">
-    
+
             <PageNavbar active="dashboard" />
-    
+
             <br></br>
             <div className="container movies-container">
               <div className="jumbotron">
                 <div className="h5">Select a Year to Explore Year-Specific Statistics </div>
-                <div className="input-container"> 
+                <div className="input-container">
                     <select value={this.state.selectedYear} onChange={this.handleYearChange} className="dropdown" id="yearsDropdown">
 			            <option select value> -- Select Year -- </option>
 			            {this.state.allYears}
@@ -102,27 +127,34 @@ export default class Benefit extends React.Component {
 			            {this.state.allOptions}
 			        </select>
 
-                    <button id="submitMovieBtn" className="submit-btn" onClick={this.submitFirstSearch}>Submit</button>
+                    <button id="submit1stSearchBtn" className="submit-btn" onClick={this.submitFirstSearch}>Submit</button>
                 </div>
                 <br/>
-                
+
                 <div className="section">
                     <div className="h6" style={{"text-decoration": "underline", "font-size": 17}}> {this.state.selectedOption} </div>
-                        <div className="movies-header">
-                            <div className="header"><strong>Benefit Category</strong></div>
-                            <div className="header"><strong>Benefit Name</strong></div>
-                            <div className="header"><strong>Out of Pocket Co-pay</strong></div>
-                        </div>    
-                        <div className="movies-container">
-                            {this.state.benefitsResults}
-                        </div>
-                </div>                
+                        <div class="table-wrapper">
+              							<table id='dtable' class="fl-table">
+              									<thead>
+              									<tr>
+              											<th>Benefit Category</th>
+              											<th>Benefit Name</th>
+              											<th>Average Copay out of Net</th>
+              									</tr>
+              									</thead>
+              									<tbody>
+                                {this.state.ben1List}
+              									</tbody>
+              							</table>
+              					</div>
+              		    </div>
+                </div>
               </div>
-    
+
               <br></br>
               <div className="jumbotron">
                 <div className="h5"> Changes In Prices Over The Years</div>
-                <div className="input-container"> 
+                <div className="input-container">
                     <select value={this.state.selectedBenefit} onChange={this.handleBenefitChange} className="dropdown" id="benefitDropdown">
 			            <option select value> -- Select Benefit Category -- </option>
 			            {this.state.allBenefits}
@@ -148,7 +180,7 @@ export default class Benefit extends React.Component {
                 </div>
               </div>
             </div>
-          </div>
+
         );
       }
 }
