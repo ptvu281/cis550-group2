@@ -12,7 +12,9 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
+    "datatables.net": "^1.10.22",
     "express": "^4.17.1",
+    "jquery": "^3.5.1",
     "mysql": "^2.17.1"
   }
 }

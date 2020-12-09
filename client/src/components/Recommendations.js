@@ -2,9 +2,16 @@ import React from 'react';
 import PageNavbar from './PageNavbar';
 import RecommendationsRow from './RecommendationsRow';
 import '../style/Recommendations.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
-export default class Recommendations extends React.Component {
+//Bootstrap and jQuery libraries
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'jquery/dist/jquery.min.js';
+//Datatable Modules
+import "datatables.net-dt/js/dataTables.dataTables"
+import "datatables.net-dt/css/jquery.dataTables.min.css"
+import $ from 'jquery';
+
+class Recommendations extends React.Component {
 	constructor(props) {
 		super(props);
 
@@ -98,11 +105,16 @@ export default class Recommendations extends React.Component {
 			})
 			.catch(err => console.log(err))
 	}
-
+	// 
+	// componentDidMount() {
+	// 	//initialize datatable
+	// 	$(document).ready(function () {
+	// 			$('#dtable').DataTable();
+	// 	});
+	// }
 
 
 	render() {
-
 		return (
 			<div className="Recommendations">
 				<PageNavbar active="recommendations" />
@@ -140,7 +152,7 @@ export default class Recommendations extends React.Component {
 			    </div>
 
 					<div class="table-wrapper">
-							<table class="fl-table">
+							<table id='dtable' class="fl-table">
 									<thead>
 									<tr>
 											<th>Plan ID</th>
@@ -158,7 +170,10 @@ export default class Recommendations extends React.Component {
 							</table>
 					</div>
 		    </div>
-
 		);
+
 	}
+
 }
+
+export default Recommendations;

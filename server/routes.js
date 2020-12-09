@@ -38,7 +38,7 @@ function getTopInGenre(req, res) {
 
 };
 
-/* ---- Q2 (Recommendations) ---- */
+/* ---- (Recommendations Page) ---- */
 function getRecs(req, res) {
   var inputLocation = req.params.location;
   var inputAge = req.params.age;
