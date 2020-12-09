@@ -11,7 +11,7 @@ import "datatables.net-dt/js/dataTables.dataTables"
 import "datatables.net-dt/css/jquery.dataTables.min.css"
 import $ from 'jquery';
 
-class Recommendations extends React.Component {
+export default class Recommendations extends React.Component {
 	constructor(props) {
 		super(props);
 
@@ -86,34 +86,50 @@ class Recommendations extends React.Component {
 
 	// Will need to further modify link.
 	submitSearch() {
+		var obj;
+		$('#dtable').DataTable().clear();
+		$('#dtable').DataTable().destroy();
 		fetch("http://localhost:8081/recommendations/" + this.state.location + "/" + this.state.age + "/" + this.state.benefit + "/" + this.state.familyOption, {
 			method: "GET"
 		})
 			.then(res => res.json())
-			.then(recList => {
-				console.log(recList); //displays your JSON object in the console
-				if (!recList) return;
-				let recDivs = recList.map((recObj, i) =>
-					<RecommendationsRow key={i} planid={recObj.planid} benefit={recObj.benefit} network={recObj.network}
-					copayoon={recObj.copayoon} coinsoon={recObj.coinsoon} indvrate={recObj.indvrate} grouprate={recObj.grouprate}/>
-				);
-
-				//This saves our HTML representation of the data into the state, which we can call in our render function
-				this.setState({
-					recList: recDivs
-				});
-			})
-			.catch(err => console.log(err))
+			.then(data => obj = data)
+			.then(() => console.log(JSON.stringify(obj)))
+			// .then(res => res.json())
+			// .then(recList => {
+			// 	console.log(recList); //displays your JSON object in the console
+			// 	if (!recList) return;
+			// 	let recDivs = recList.map((recObj, i) =>
+			// 		<RecommendationsRow key={i} planid={recObj.planid} benefit={recObj.benefit} network={recObj.network}
+			// 		copayoon={recObj.copayoon} coinsoon={recObj.coinsoon} indvrate={recObj.indvrate} grouprate={recObj.grouprate}/>
+			// 	);
+			// 	//This saves our HTML representation of the data into the state, which we can call in our render function
+			// 	this.setState({
+			// 		recList: recDivs
+			// 	});
+			// })
+			// .catch(err => console.log(err))
+			.then(() =>
+			$('#dtable').DataTable ({
+        "data" : obj,
+        "columns" : [
+            { "data" : "planid" },
+            { "data" : "benefit" },
+            { "data" : "network" },
+            { "data" : "copayoon" },
+            { "data" : "coinsoon" },
+            { "data" : "indvrate" },
+            { "data" : "grouprate" }
+        ]
+    }))
 	}
-	// 
-	// componentDidMount() {
-	// 	//initialize datatable
-	// 	$(document).ready(function () {
-	// 			$('#dtable').DataTable();
-	// 	});
-	// }
-
-
+	//
+	componentDidMount() {
+		// initialize datatable
+		// $(document).ready(function () {
+				$('#dtable').DataTable();
+		// });
+	}
 	render() {
 		return (
 			<div className="Recommendations">
@@ -165,7 +181,6 @@ class Recommendations extends React.Component {
 									</tr>
 									</thead>
 									<tbody>
-									{this.state.recList}
 									</tbody>
 							</table>
 					</div>
@@ -175,5 +190,4 @@ class Recommendations extends React.Component {
 	}
 
 }
-
-export default Recommendations;
+// 									{this.state.recList}
