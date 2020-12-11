@@ -121,7 +121,7 @@ export default class Recommendations extends React.Component {
             { "data" : "indvrate" },
             { "data" : "grouprate" }
         ],
-				responsive: true
+				"scrollX": true
     }))
 	}
 	//
