@@ -8,6 +8,7 @@ import About from './About';
 import Recommendations from './Recommendations';
 import State from './State';
 import Benefit from './Benefit';
+import Provider from './Provider';
 
 export default class App extends React.Component {
 
@@ -46,6 +47,12 @@ export default class App extends React.Component {
 							path="/benefits"
 							render={() => (
 								<Benefit />
+							)}
+						/>
+						<Route
+							path='/provider'
+							render={() => (
+								<Provider />
 							)}
 						/>
 					</Switch>
