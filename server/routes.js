@@ -16,13 +16,13 @@ function getRecs(req, res) {
   var inputFamily = req.params.family;
   var query = `
     SELECT DISTINCT Plan.PlanId AS planid, Benefits.BenefitName AS benefit, Network.NetworkName AS network,
-    Benefits.CopayOutofNetAmount AS copayoon, Benefits.CoinsOutofNet AS coinsoon, Rates.IndividualRate AS indvrate,
+    Benefits.CopayOutofNetAmount AS copayoon, Benefits.CoinsOutofNet AS coinsoon, CAST(Rates.IndividualRate AS DECIMAL(10,2)) AS indvrate,
     CASE
-      WHEN '${inputFamily}' = "Couple" THEN IFNULL(FamilyOption.Couple, "No group rate found.")
-      WHEN '${inputFamily}' = "Primary Subscriber And One Dependent" THEN IFNULL(FamilyOption.PrimarySubscriberAndOneDependent, "No group rate found.")
-      WHEN '${inputFamily}' = "Primary Subscriber And Two Dependents" THEN IFNULL(FamilyOption.PrimarySubscriberAndTwoDependents, "No group rate found.")
-      WHEN '${inputFamily}' = "Primary Subscriber And Three Or More Dependents" THEN IFNULL(FamilyOption.PrimarySubscriberAndThreeOrMoreDependents, "No group rate found.")
-      WHEN '${inputFamily}' = "Couple And One Dependent" THEN IFNULL(FamilyOption.CoupleAndOneDependent, "No group rate found.")
+      WHEN '${inputFamily}' = "Couple" THEN IFNULL(CAST(FamilyOption.Couple AS DECIMAL(10,2)), "No group rate found.")
+      WHEN '${inputFamily}' = "Primary Subscriber And One Dependent" THEN IFNULL(CAST(FamilyOption.PrimarySubscriberAndOneDependent AS DECIMAL(10,2)), "No group rate found.")
+      WHEN '${inputFamily}' = "Primary Subscriber And Two Dependents" THEN IFNULL(CAST(FamilyOption.PrimarySubscriberAndTwoDependents AS DECIMAL(10,2)), "No group rate found.")
+      WHEN '${inputFamily}' = "Primary Subscriber And Three Or More Dependents" THEN IFNULL(CAST(FamilyOption.PrimarySubscriberAndThreeOrMoreDependents AS DECIMAL(10,2)), "No group rate found.")
+      WHEN '${inputFamily}' = "Couple And One Dependent" THEN IFNULL(CAST(FamilyOption.CoupleAndOneDependent AS DECIMAL(10,2)), "No group rate found.")
       ELSE 'Not Applicable'
     END AS grouprate
     FROM Plan JOIN Rates ON Plan.PlanId = Rates.PlanId
@@ -124,7 +124,43 @@ function getState1(req, res) {
   ORDER BY
   CASE WHEN '${inputFreq}' = "Least Frequent Plans" THEN COUNT(Benefits.BenefitName) END ASC,
   CASE WHEN '${inputFreq}' = "Most Frequent Plans" THEN COUNT(Benefits.BenefitName) END DESC
-  LIMIT 5;`;
+  LIMIT 5`;
+
+  connection.query(query, function(err, rows, fields){
+    if(err) console.log(err);
+    else{
+      res.json(rows)
+    }
+  })
+};
+
+function getState2(req, res) {
+  var inputState = req.params.selectedState2;
+  var inputBenefit = req.params.selectedBenefit;
+
+  var query = `
+  WITH num_benefits_per_state AS
+  (SELECT DISTINCT StateCode, COUNT(BenefitName) AS benefit_cnt
+  FROM Plan JOIN Benefits ON Plan.PlanId=Benefits.PlanId
+  WHERE Benefits.Category = '${inputBenefit}'
+  GROUP BY StateCode),
+
+  avg_benefits_nationwide AS
+  (SELECT AVG(benefit_cnt) AS avg_benefit
+  FROM num_benefits_per_state),
+
+  states_with_above_avg_benefits AS
+  (SELECT StateCode
+  FROM num_benefits_per_state, avg_benefits_nationwide
+  WHERE benefit_cnt > avg_benefit)
+
+  SELECT Plan.StateCode AS state, Benefits.Category AS category,
+  CAST(AVG(IndividualRate) AS DECIMAL(10,2)) AS individual,
+  CAST(AVG(CopayOutofNetAmount) AS DECIMAL(10,2)) AS copay,
+  CASE WHEN EXISTS (SELECT StateCode FROM states_with_above_avg_benefits  WHERE states_with_above_avg_benefits.StateCode = Plan.StateCode) THEN "Above Average # of Benefits" ELSE "Not Above Average # of Benefits" END AS above_average
+  FROM Plan JOIN Benefits ON Plan.PlanId = Benefits.PlanId JOIN Rates ON Plan.PlanId = Rates.PlanId
+  WHERE Plan.StateCode = '${inputState}' AND Benefits.Category = '${inputBenefit}'
+  GROUP BY Plan.StateCode;`;
 
   connection.query(query, function(err, rows, fields){
     if(err) console.log(err);
@@ -138,5 +174,6 @@ module.exports = {
 	getRecs: getRecs,
   getBen1: getBen1,
   getBen2: getBen2,
-  getState1: getState1
+  getState1: getState1,
+  getState2: getState2
 }
