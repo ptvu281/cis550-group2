@@ -17,7 +17,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.get('/recommendations/:location/:age/:benefit/:family', routes.getRecs);
 app.get('/ben1/:selectedYear/:selectedOption', routes.getBen1);
 app.get('/ben2/:selectedBenefit/:selectedStats', routes.getBen2);
-app.get('/state1/:selectedState/:selectedYear', routes.getState1);
+app.get('/state1/:selectedState/:selectedYear/:selectedFreq', routes.getState1);
 
 
 app.listen(8081, () => {

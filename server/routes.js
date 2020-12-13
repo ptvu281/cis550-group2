@@ -43,45 +43,20 @@ function getRecs(req, res) {
   })
 };
 
-//This is very long and takes 9 seconds. We should try to cut this down somehow.
+//Managed to cut the time down to ~5 seconds
 function getBen1(req, res) {
   var inputYear = req.params.selectedYear;
   var inputOpt = req.params.selectedOption;
   var query = `
-    WITH max_avg_copay AS
-    (SELECT Category, BenefitName, CAST(AVG(IndividualRate) AS DECIMAL(10,2)) AS avg, 0 AS cnt, "Most Expensive Benefits" AS table_type
+    SELECT Category, BenefitName, CAST(AVG(IndividualRate) AS DECIMAL(10,2)) AS avg, COUNT(BenefitName) AS cnt
     FROM Benefits JOIN Rates ON Rates.PlanId = Benefits.PlanId
     WHERE BusinessYear = '${inputYear}'
     GROUP BY BenefitName
-    ORDER BY avg DESC
-    LIMIT 5),
-
-    min_avg_copay AS
-    (SELECT Category,  BenefitName, CAST(AVG(IndividualRate) AS DECIMAL(10,2)) AS avg, COUNT(BenefitName) AS cnt, "Most Affordable Benefits" AS table_type
-    FROM Benefits JOIN Rates ON Rates.PlanId = Benefits.PlanId
-    WHERE BusinessYear = '${inputYear}'
-    GROUP BY BenefitName
-    ORDER BY avg ASC, cnt DESC
-    LIMIT 5),
-
-    freq_benefits AS
-    (SELECT Category,  BenefitName,  CAST(AVG(IndividualRate) AS DECIMAL(10,2)) AS avg, COUNT(BenefitName) AS cnt, "Most Frequent Benefits" AS table_type
-    FROM Benefits JOIN Rates ON Rates.PlanId = Benefits.PlanId
-    WHERE BusinessYear = '${inputYear}'
-    GROUP BY BenefitName
-    ORDER BY cnt DESC
-    LIMIT 5),
-
-    big_table AS
-    (SELECT * FROM freq_benefits
-    UNION
-    SELECT * FROM min_avg_copay
-    UNION
-    SELECT * FROM max_avg_copay)
-
-    SELECT Category, BenefitName, avg
-    FROM big_table
-    WHERE  big_table.table_type = '${inputOpt}'`;
+    ORDER BY
+    CASE WHEN '${inputOpt}' = "Most Affordable Benefits" THEN avg END ASC,
+    CASE WHEN '${inputOpt}' = "Most Expensive Benefits" THEN avg END DESC,
+    CASE WHEN '${inputOpt}' = "Most Frequent Benefits" THEN cnt END DESC
+    LIMIT 5`;
 
   connection.query(query, function(err, rows, fields){
     if(err) console.log(err);
@@ -139,13 +114,17 @@ function getBen2(req, res) {
 function getState1(req, res) {
   var inputState = req.params.selectedState;
   var inputYear = req.params.selectedYear;
+  var inputFreq = req.params.selectedFreq;
+
   var query = `
-  SELECT Benefits.Category AS category, Benefits.BenefitName AS name
+  SELECT DISTINCT Benefits.Category AS category, Benefits.BenefitName AS name
   FROM Benefits JOIN Plan ON Plan.PlanId=Benefits.PlanId
   WHERE Plan.StateCode = '${inputState}' AND Plan.BusinessYear = '${inputYear}'
   GROUP BY Benefits.BenefitName
-  ORDER BY COUNT(Benefits.BenefitName) DESC
-  LIMIT 5`;
+  ORDER BY
+  CASE WHEN '${inputFreq}' = "Least Frequent Plans" THEN COUNT(Benefits.BenefitName) END ASC,
+  CASE WHEN '${inputFreq}' = "Most Frequent Plans" THEN COUNT(Benefits.BenefitName) END DESC
+  LIMIT 5;`;
 
   connection.query(query, function(err, rows, fields){
     if(err) console.log(err);

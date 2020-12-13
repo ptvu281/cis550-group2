@@ -19,17 +19,23 @@ export default class State extends React.Component {
         let yearList = ["2014", "2015", "2016"];
 		let yearDivs = yearList.map((yearObj, i) => <option key={i} value={yearObj}>{yearObj}</option>);
 
+		let freqList = ["Most Frequent Plans", "Least Frequent Plans"];
+		let freqDivs = freqList.map((freqObj, i) => <option key={i} value={freqObj}>{freqObj}</option>);
+
         this.state = {
             selectedState: "",
             states: stateDivs,
             selectedYear: "",
+            freq: freqDivs,
+						selectedFreq: "",
             years: yearDivs,
             benefits: [],
 		}
 
         this.handleChangeState = this.handleChangeState.bind(this);
         this.handleChangeYear = this.handleChangeYear.bind(this);
-		this.submitStateYear = this.submitStateYear.bind(this);
+				this.handleChangeFreq = this.handleChangeFreq.bind(this);
+				this.submitStateYear = this.submitStateYear.bind(this);
 	}
 
 
@@ -37,7 +43,7 @@ export default class State extends React.Component {
 
 	// Hint: State submitted is contained in `this.state.selectedState`.
 	submitStateYear() {
-		fetch("http://localhost:8081/state1/" + this.state.selectedState + "/" + this.state.selectedYear, {
+		fetch("http://localhost:8081/state1/" + this.state.selectedState + "/" + this.state.selectedYear + "/" + this.state.selectedFreq, {
 			method: "GET"
 		})
 			.then(res => res.json())
@@ -69,6 +75,11 @@ export default class State extends React.Component {
 			selectedYear: e.target.value
 		});
 	}
+		handleChangeFreq(e) {
+		this.setState({
+			selectedFreq: e.target.value
+		});
+	}
 
 	render() {
 
@@ -77,17 +88,20 @@ export default class State extends React.Component {
 				<PageNavbar active="state"/>
 			    <div className="container recommendations-container">
 			    	<div className="jumbotron">
-			    		<div className="h5">Most Frequent Benefits per State</div>
+			    		<div className="h5">Frequent Benefits per State</div>
 			    		<br></br>
                         <div className="dropdown-container">
                             <select value={this.state.selectedState} onChange={this.handleChangeState} className="dropdown" id="decadesDropdown">
                                 <option select value> -- select a state -- </option>
                                 {this.state.states}
                             </select>
-                            <br></br>
                             <select value={this.state.selectedYear} onChange={this.handleChangeYear} className="dropdown" id="decadesDropdown">
                                 <option select value> -- select a year -- </option>
                                 {this.state.years}
+                            </select>
+														<select value={this.state.selectedFreq} onChange={this.handleChangeFreq} className="dropdown" id="decadesDropdown">
+                                <option select value> -- select a frequency -- </option>
+                                {this.state.freq}
                             </select>
                             <button className="submit-btn" id="decadesSubmitBtn" onClick={this.submitStateYear}>Submit</button>
                     </div>
