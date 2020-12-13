@@ -48,14 +48,14 @@ function getBen1(req, res) {
   var inputYear = req.params.selectedYear;
   var inputOpt = req.params.selectedOption;
   var query = `
-    SELECT Category, BenefitName, CAST(AVG(IndividualRate) AS DECIMAL(10,2)) AS avg, COUNT(BenefitName) AS cnt
+    SELECT Category, BenefitName, CAST(AVG(IndividualRate) AS DECIMAL(10,2)) AS avg
     FROM Benefits JOIN Rates ON Rates.PlanId = Benefits.PlanId
     WHERE BusinessYear = '${inputYear}'
     GROUP BY BenefitName
     ORDER BY
     CASE WHEN '${inputOpt}' = "Most Affordable Benefits" THEN avg END ASC,
     CASE WHEN '${inputOpt}' = "Most Expensive Benefits" THEN avg END DESC,
-    CASE WHEN '${inputOpt}' = "Most Frequent Benefits" THEN cnt END DESC
+    CASE WHEN '${inputOpt}' = "Most Frequent Benefits" THEN COUNT(BenefitName) END DESC
     LIMIT 5`;
 
   connection.query(query, function(err, rows, fields){
@@ -169,11 +169,56 @@ function getState2(req, res) {
     }
   })
 };
+
+function getProvider(req, res) {
+  var inputState = req.params.selectedState;
+  var inputYear = req.params.selectedYear;
+
+  var query = `
+
+  WITH total_count AS
+  (SELECT Plan.PlanId, Network.NetworkName, COUNT(BenefitName) AS cnt
+  FROM Plan
+  JOIN Network ON Network.IssuerId=Plan.IssuerId
+  JOIN Benefits ON Plan.PlanId = Benefits.PlanId
+  WHERE Plan.StateCode = '${inputState}'
+  AND Plan.BusinessYear = '${inputYear}'
+  GROUP BY NetworkName, PlanId
+  ORDER BY COUNT(BenefitName) DESC),
+
+  avg_num_benefits AS
+  (SELECT NetworkName, CEILING(AVG(cnt)) avg_num
+  FROM total_count
+  GROUP BY NetworkName)
+
+  SELECT Network.NetworkName AS name,
+  CAST(AVG(CopayOutofNetAmount)AS DECIMAL(10,2)) AS avg_copay,
+  CAST(AVG(CoinsOutofNet) AS DECIMAL(10,2)) AS avg_coins,
+  COUNT(Plan.PlanId) AS num_plans,
+  avg_num
+  FROM Network
+  JOIN Plan ON Network.IssuerId=Plan.IssuerId
+  JOIN Benefits ON Plan.PlanId = Benefits.PlanId
+  JOIN avg_num_benefits ON avg_num_benefits.NetworkName=Network.NetworkName
+  WHERE Plan.StateCode = '${inputState}'
+  AND Plan.BusinessYear = '${inputYear}'
+  GROUP BY Network.NetworkName
+  ORDER BY avg_num DESC, num_plans DESC;`;
+
+  connection.query(query, function(err, rows, fields){
+    if(err) console.log(err);
+    else{
+      res.json(rows)
+    }
+  })
+};
+
 // The exported functions, which can be accessed in index.js.
 module.exports = {
 	getRecs: getRecs,
   getBen1: getBen1,
   getBen2: getBen2,
   getState1: getState1,
-  getState2: getState2
+  getState2: getState2,
+  getProvider: getProvider
 }

@@ -8,10 +8,13 @@ export default class ProviderRow extends React.Component {
 
 	render() {
 		return (
-			<div className="movieResults">
-				<div className="name">{this.props.title}</div>
-				<div className="id">{this.props.id}</div>
-			</div>
+			<tr>
+					<td>{this.props.name}</td>
+					<td>{this.props.avg_copay}</td>
+					<td>{this.props.avg_coins}</td>
+					<td>{this.props.num_plans}</td>
+					<td>{this.props.avg_num}</td>
+			</tr>
 		);
 	}
 }
