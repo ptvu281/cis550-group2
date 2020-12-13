@@ -141,9 +141,9 @@ export default class Provider extends React.Component {
 														{this.state.years}
 												</select>
                             <button className="submit-btn" id="decadesSubmitBtn" onClick={this.submitProvider}>Submit</button>
-			    		</div>
-                    </div>
-</div>
+											    		</div>
+								                    </div>
+								</div>
                             <div class="table-wrapper">
 		              							<table id='dtable' class="fl-table">
 		              									<thead>

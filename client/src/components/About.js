@@ -2,8 +2,6 @@ import React from 'react';
 import '../style/Dashboard.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import PageNavbar from './PageNavbar';
-import GenreButton from './GenreButton';
-import DashboardMovieRow from './DashboardMovieRow';
 
 export default class About extends React.Component {
   constructor(props) {
@@ -11,11 +9,11 @@ export default class About extends React.Component {
 
     // The state maintained by this React Component. This component maintains the list of genres,
     // and a list of movies for a specified genre.
-    
+
   }
 
 
-  render() {    
+  render() {
     return (
       <div className="Dashboard">
 
