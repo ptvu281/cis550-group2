@@ -1,6 +1,6 @@
 import React from 'react';
 import PageNavbar from './PageNavbar';
-import RecommendationsRow from './RecommendationsRow';
+import StateRow1 from './StateRow1';
 import '../style/Recommendations.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -16,7 +16,7 @@ export default class State extends React.Component {
 		"RI", "SC", "SD", "TN", "TX", "UT", "VA", "VT", "WA", "WI", "WV","WY"];
 		let stateDivs = stateList.map((stateObj, i) => <option key={i} value={stateObj}>{stateObj}</option>);
 
-        let yearList = ["1990", "2000", "2010", "2020"];
+        let yearList = ["2014", "2015", "2016"];
 		let yearDivs = yearList.map((yearObj, i) => <option key={i} value={yearObj}>{yearObj}</option>);
 
         this.state = {
@@ -37,7 +37,7 @@ export default class State extends React.Component {
 
 	// Hint: State submitted is contained in `this.state.selectedState`.
 	submitStateYear() {
-		fetch("http://localhost:8081/state/" + this.state.selectedState + "/" + this.state.selectedYear, {
+		fetch("http://localhost:8081/state1/" + this.state.selectedState + "/" + this.state.selectedYear, {
 			method: "GET"
 		})
 			.then(res => res.json())
@@ -45,7 +45,7 @@ export default class State extends React.Component {
 				console.log(benefitList); //displays your JSON object in the console
 				if (!benefitList) return;
 				let benefitDivs = benefitList.map((benefitObj, i) =>
-					<RecommendationsRow key={i} title={benefitObj.TITLE} id={benefitObj.ID}/>
+					<StateRow1 key={i} category={benefitObj.category} name={benefitObj.name}/>
 				);
 
 				//This saves our HTML representation of the data into the state, which we can call in our render function
@@ -77,7 +77,7 @@ export default class State extends React.Component {
 				<PageNavbar active="state"/>
 			    <div className="container recommendations-container">
 			    	<div className="jumbotron">
-			    		<div className="h5">State</div>
+			    		<div className="h5">Most Frequent Benefits per State</div>
 			    		<br></br>
                         <div className="dropdown-container">
                             <select value={this.state.selectedState} onChange={this.handleChangeState} className="dropdown" id="decadesDropdown">
@@ -90,22 +90,26 @@ export default class State extends React.Component {
                                 {this.state.years}
                             </select>
                             <button className="submit-btn" id="decadesSubmitBtn" onClick={this.submitStateYear}>Submit</button>
-			    		</div>
                     </div>
-                    <div className="jumbotron">
-                        <div className="header-container">
-                            <div className="h6">People like ...</div>
-                            <div className="headers">
-                                <div className="header"><strong>Benefit Name</strong></div>
-                                <div className="header"><strong>Benefit ID</strong></div>
-                            </div>
-                        </div>
-                        <div className="results-container" id="results">
-                            {this.state.benefits}
-                        </div>
-                    </div>
-			    </div>
-		    </div>
+										<div className="section">
+		                    <div className="h6" style={{"text-decoration": "underline", "font-size": 17}}> {this.state.selectedOption} </div>
+		                        <div class="table-wrapper">
+		              							<table id='dtable' class="fl-table">
+		              									<thead>
+		              									<tr>
+		              											<th>Benefit Category</th>
+		              											<th>Benefit Name</th>
+		              									</tr>
+		              									</thead>
+		              									<tbody>
+		                                {this.state.benefits}
+		              									</tbody>
+		              							</table>
+		              					</div>
+		              		    </div>
+		                </div>
+			    			</div>
+	    		</div>
 		);
 	}
 }

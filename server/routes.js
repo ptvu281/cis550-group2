@@ -136,9 +136,28 @@ function getBen2(req, res) {
   })
 };
 
+function getState1(req, res) {
+  var inputState = req.params.selectedState;
+  var inputYear = req.params.selectedYear;
+  var query = `
+  SELECT Benefits.Category AS category, Benefits.BenefitName AS name
+  FROM Benefits JOIN Plan ON Plan.PlanId=Benefits.PlanId
+  WHERE Plan.StateCode = '${inputState}' AND Plan.BusinessYear = '${inputYear}'
+  GROUP BY Benefits.BenefitName
+  ORDER BY COUNT(Benefits.BenefitName) DESC
+  LIMIT 5`;
+
+  connection.query(query, function(err, rows, fields){
+    if(err) console.log(err);
+    else{
+      res.json(rows)
+    }
+  })
+};
 // The exported functions, which can be accessed in index.js.
 module.exports = {
 	getRecs: getRecs,
   getBen1: getBen1,
-  getBen2: getBen2
+  getBen2: getBen2,
+  getState1: getState1
 }
