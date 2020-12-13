@@ -15,10 +15,10 @@ export default class Recommendations extends React.Component {
 	constructor(props) {
 		super(props);
 
-		let locationList = ["AK", "AL", "AR", "AZ", "CA", "CO", "CT", "DE", "FL", "GA", "HI",
-		"IA", "ID", "IL", "IN", "KS", "KY", "LA", "MA", "MD", "ME", "MI", "MN", "MO",
-		"MS", "MT", "NC", "ND", "NE", "NH", "NJ", "NM", "NV","NY","OH","OK","OR","PA",
-		"RI", "SC", "SD", "TN", "TX", "UT", "VA", "VT", "WA", "WI", "WV","WY"];
+		let locationList = ["AK", "AL", "AR", "AZ", "DE", "FL", "GA", "HI",
+"IA", "ID", "IL", "IN", "KS", "LA", "ME", "MI", "MO",
+"MS", "MT", "NC", "ND", "NE", "NH", "NJ", "NM", "NV","OH","OK","OR","PA",
+"SC", "SD", "TN", "TX", "UT", "VA", "WI", "WV","WY"];
 		let locationDivs = locationList.map((locationObj, i) => <option key={i} value={locationObj}>{locationObj}</option>);
 
 		let ageList = ["0-20", "21 and over"];

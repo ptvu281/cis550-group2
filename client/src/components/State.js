@@ -11,10 +11,10 @@ export default class State extends React.Component {
 
 		// State maintained by this React component is the selected state and year,
         // and the list of benefits.
-        let stateList = ["AK", "AL", "AR", "AZ", "CA", "CO", "CT", "DE", "FL", "GA", "HI",
-		"IA", "ID", "IL", "IN", "KS", "KY", "LA", "MA", "MD", "ME", "MI", "MN", "MO",
-		"MS", "MT", "NC", "ND", "NE", "NH", "NJ", "NM", "NV","NY","OH","OK","OR","PA",
-		"RI", "SC", "SD", "TN", "TX", "UT", "VA", "VT", "WA", "WI", "WV","WY"];
+        let stateList = ["AK", "AL", "AR", "AZ", "DE", "FL", "GA", "HI",
+		"IA", "ID", "IL", "IN", "KS", "LA", "ME", "MI", "MO",
+		"MS", "MT", "NC", "ND", "NE", "NH", "NJ", "NM", "NV","OH","OK","OR","PA",
+		"SC", "SD", "TN", "TX", "UT", "VA", "WI", "WV","WY"];
 		let stateDivs = stateList.map((stateObj, i) => <option key={i} value={stateObj}>{stateObj}</option>);
 
         let yearList = ["2014", "2015", "2016"];
