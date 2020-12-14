@@ -126,7 +126,7 @@ export default class Benefit extends React.Component {
         return (
           <div className="Dashboard">
 
-            <PageNavbar active="dashboard" />
+            <PageNavbar active="benefits" />
 
             <br></br>
             <div className="container movies-container">
