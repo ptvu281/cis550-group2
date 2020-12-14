@@ -50,7 +50,6 @@ h2{
     width: 100%;
     white-space: nowrap;
     background-color: white;
-    table-layout: fixed;
     text-overflow: ellipsis;
 }
 

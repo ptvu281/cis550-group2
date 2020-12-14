@@ -213,6 +213,28 @@ function getProvider(req, res) {
   })
 };
 
+function getCategory(req, res){
+  var query = `
+  WITH cte AS
+  (
+    SELECT Category, count(*) as num
+    FROM Benefits
+    Group by Category
+  )
+  SELECT Category, num/2777947 AS Percent
+  FROM cte
+  order by Percent desc
+  limit 10;
+  `;
+  
+  connection.query(query, function(err, rows, fields){
+    if(err) console.log(err);
+    else{
+      res.json(rows);
+    }
+  })
+};
+
 // The exported functions, which can be accessed in index.js.
 module.exports = {
 	getRecs: getRecs,
@@ -220,5 +242,6 @@ module.exports = {
   getBen2: getBen2,
   getState1: getState1,
   getState2: getState2,
-  getProvider: getProvider
+  getProvider: getProvider,
+  getCategory: getCategory,
 }

@@ -20,6 +20,7 @@ app.get('/ben2/:selectedBenefit/:selectedStats', routes.getBen2);
 app.get('/state1/:selectedState/:selectedYear/:selectedFreq', routes.getState1);
 app.get('/state2/:selectedState2/:selectedBenefit', routes.getState2);
 app.get('/provider/:selectedState/:selectedYear', routes.getProvider);
+app.get('/about', routes.getCategory);
 
 app.listen(8081, () => {
 	console.log(`Server listening on PORT 8081`);

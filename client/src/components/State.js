@@ -154,66 +154,68 @@ export default class State extends React.Component {
                                 {this.state.freq}
                             </select>
                             <button className="submit-btn" id="decadesSubmitBtn" onClick={this.submitStateYear}>Submit</button>
-                    </div>
-										<div className="section">
+                    	</div>
+						<div className="section">
 		                    <div className="h6" style={{"text-decoration": "underline", "font-size": 17}}> {this.state.selectedOption} </div>
-		                        <div class="table-wrapper">
-		              							<table id='dtable' class="fl-table">
-		              									<thead>
-		              									<tr>
-		              											<th>Benefit Category</th>
-		              											<th>Benefit Name</th>
-		              									</tr>
-		              									</thead>
-		              									<tbody>
-		                                {this.state.benefits}
-		              									</tbody>
-		              							</table>
-		              					</div>
-		              		    </div>
-		                </div>
-			    			</div>
+		                    <div class="table-wrapper">
+								<table id='dtable' class="fl-table">
+									<thead>
+										<tr>
+											<th>Benefit Category</th>
+											<th>Benefit Name</th>
+										</tr>
+									</thead>
+									<tbody>
+										{this.state.benefits}
+									</tbody>
+								</table>
+		              		</div>
+		            	</div>
+		        	</div>
+			    </div>
 
 
 
 
-								<br></br>
-								<div className="jumbotron">
-									<div className="h5">Average Statistics per Benefit Category per State</div>
-									<div className="input-container">
-									<select value={this.state.selectedState2} onChange={this.handleChangeState2} className="dropdown" id="decadesDropdown">
-											<option select value> -- select a state -- </option>
-											{this.state.states2}
-									</select>
+				<br></br>
+				<div className="container recommendations-container">	
+					<div className="jumbotron">
+						<div className="h5">Average Statistics per Benefit Category per State</div>
+						<div className="input-container">
+							<select value={this.state.selectedState2} onChange={this.handleChangeState2} className="dropdown" id="decadesDropdown">
+									<option select value> -- select a state -- </option>
+									{this.state.states2}
+							</select>
 
-									<select value={this.state.selectedBenefit} onChange={this.handleBenefitChange} className="dropdown" id="benefitDropdown">
-								<option select value> -- select a benefit category -- </option>
-								{this.state.allBenefits}
-						</select>
+							<select value={this.state.selectedBenefit} onChange={this.handleBenefitChange} className="dropdown" id="benefitDropdown">
+							<option select value> -- select a benefit category -- </option>
+							{this.state.allBenefits}
+							</select>
 
-											<button id="submitMovieBtn" className="submit-btn" onClick={this.submitAverageSearch}>Submit</button>
-									</div>
-									<br/>
-									<div className="movies-container">
-									<div class="table-wrapper">
-											<table id='dtable' class="fl-table">
-													<thead>
-													<tr>
-															<th>State</th>
-															<th>Benefit Category</th>
-															<th>Average Individual Rate</th>
-															<th>Average Copay out of Net</th>
-															<th>Above Average # of Benefits?</th>
-													</tr>
-													</thead>
-													<tbody>
-													{this.state.averages}
-													</tbody>
-											</table>
-									</div>
-									</div>
-								</div>
+							<button id="submitMovieBtn" className="submit-btn" onClick={this.submitAverageSearch}>Submit</button>
+						</div>
+						<br/>
+						<div className="movies-container">
+							<div class="table-wrapper">
+								<table id='dtable' class="fl-table">
+									<thead>
+									<tr>
+											<th>State</th>
+											<th>Benefit Category</th>
+											<th>Average Individual Rate</th>
+											<th>Average Copay out of Net</th>
+											<th>Above Average # of Benefits?</th>
+									</tr>
+									</thead>
+									<tbody>
+									{this.state.averages}
+									</tbody>
+								</table>
+							</div>
+						</div>
 					</div>
+				</div>
+			</div>
 		);
 	}
 }
