@@ -2,7 +2,7 @@ import React from 'react';
 import '../style/Dashboard.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import PageNavbar from './PageNavbar';
-import {Category} from './Components';
+import {Category, RevenueBar, SalaryBar} from './Components';
 
 export default class About extends React.Component {
   constructor(props) {
@@ -61,6 +61,21 @@ export default class About extends React.Component {
               height="200"
               labels={this.state.categoryList}
               series={this.state.percentList}
+            />
+          </div>
+          <br/>
+          <div className="jumbotron">
+            <RevenueBar
+              labels={["2014", "2015", "2016"]}
+              issuerNetworkNum={[764, 1301, 1266]}
+              planNum={[18689, 31253, 27381]}
+              individualRate={[186.12, 185.94, 192.04]}
+            />
+          </div>
+          <div className="jumbotron">
+            <SalaryBar
+                labels={["WI", "TX", "FL", "OH", "IL", "PA", "AZ", "MI", "GA", "IN", "VA"]}
+                salaryData={[7135, 6441, 5130, 5092, 4299, 4208, 3345, 3248, 2893, 2347, 2256]}
             />
           </div>
           <br/>
