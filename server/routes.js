@@ -34,16 +34,16 @@ function getRecs(req, res) {
 
   f AS
   (SELECT PlanId AS planid, CASE
-    WHEN '${inputFamily}' = "Couple" THEN IFNULL(CAST(FamilyOption.Couple AS DECIMAL(10,2)), "No group rate found.")
-    WHEN '${inputFamily}' = "Primary Subscriber And One Dependent" THEN IFNULL(CAST(FamilyOption.PrimarySubscriberAndOneDependent AS DECIMAL(10,2)), "No group rate found.")
-    WHEN '${inputFamily}' = "Primary Subscriber And Two Dependents" THEN IFNULL(CAST(FamilyOption.PrimarySubscriberAndTwoDependents AS DECIMAL(10,2)), "No group rate found.")
-    WHEN '${inputFamily}' = "Primary Subscriber And Three Or More Dependents" THEN IFNULL(CAST(FamilyOption.PrimarySubscriberAndThreeOrMoreDependents AS DECIMAL(10,2)), "No group rate found.")
-    WHEN '${inputFamily}' = "Couple And One Dependent" THEN IFNULL(CAST(FamilyOption.CoupleAndOneDependent AS DECIMAL(10,2)), "No group rate found.")
+    WHEN '${inputFamily}' = "Couple" THEN CAST(FamilyOption.Couple AS DECIMAL(10,2))
+    WHEN '${inputFamily}' = "Primary Subscriber And One Dependent" THEN CAST(FamilyOption.PrimarySubscriberAndOneDependent AS DECIMAL(10,2))
+    WHEN '${inputFamily}' = "Primary Subscriber And Two Dependents" THEN CAST(FamilyOption.PrimarySubscriberAndTwoDependents AS DECIMAL(10,2))
+    WHEN '${inputFamily}' = "Primary Subscriber And Three Or More Dependents" THEN CAST(FamilyOption.PrimarySubscriberAndThreeOrMoreDependents AS DECIMAL(10,2))
+    WHEN '${inputFamily}' = "Couple And One Dependent" THEN CAST(FamilyOption.CoupleAndOneDependent AS DECIMAL(10,2))
     ELSE 'Not Applicable'
   END AS grouprate
   FROM FamilyOption)
 
-  SELECT DISTINCT b.planid, benefit, network, copayoon, coinsoon, indvrate, grouprate
+  SELECT DISTINCT b.planid, benefit, network, copayoon, coinsoon, indvrate, IFNULL(f.grouprate, "No group rate found.") AS grouprate
   FROM b JOIN r ON b.planid=r.planid JOIN n ON n.planid=b.planid LEFT OUTER JOIN f ON f.planid=b.planid
   ORDER BY benefit, indvrate ASC, grouprate ASC`;
 
