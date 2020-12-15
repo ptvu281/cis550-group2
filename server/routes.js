@@ -106,6 +106,7 @@ function getBen2(req, res) {
   })
 };
 
+//Runs in like 0.19 seconds
 function getState1(req, res) {
   var inputState = req.params.selectedState;
   var inputYear = req.params.selectedYear;
@@ -130,6 +131,7 @@ function getState1(req, res) {
   })
 };
 
+//Used temporary tables 2.4seconds
 function getState2(req, res) {
   var inputState = req.params.selectedState2;
   var inputBenefit = req.params.selectedBenefit;
@@ -156,7 +158,7 @@ function getState2(req, res) {
   CASE WHEN EXISTS (SELECT StateCode FROM states_with_above_avg_benefits  WHERE states_with_above_avg_benefits.StateCode = Plan.StateCode) THEN "Above Average # of Benefits" ELSE "Not Above Average # of Benefits" END AS above_average
   FROM Plan JOIN Benefits ON Plan.PlanId = Benefits.PlanId JOIN Rates ON Plan.PlanId = Rates.PlanId
   WHERE Plan.StateCode = '${inputState}' AND Benefits.Category = '${inputBenefit}'
-  GROUP BY Plan.StateCode;`;
+  GROUP BY Plan.StateCode`;
 
   connection.query(query, function(err, rows, fields){
     if(err) console.log(err);
