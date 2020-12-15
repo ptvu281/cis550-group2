@@ -14,7 +14,6 @@ export default class About extends React.Component {
     }
   }
 
-  //Please help me check this. It couldn't work
   componentDidMount() {
 		fetch("http://localhost:8081/about", {
 			method: "GET"
@@ -52,10 +51,33 @@ export default class About extends React.Component {
         <br></br>
         <div className="container movies-container">
           <div className="jumbotron">
-            <div className="h5">Introduction</div>
+            <div className="display-4" style={{'text-align': 'center', 'color': '#003366',"font-weight": "bold"}}>Welcome to Health Insurance Marketplace DB!</div>
+            <hr class="my-4"></hr>
+            <div className="lead" style={{'text-align': 'center', 'color': '#003366', "font-size": 25}}> We're here to help you navigate the US health insurance market</div>
           </div>
 
           <br></br>
+
+          <div className="jumbotron">
+            <div className="h5" style={{"font-weight": "bold", "font-size": 25}}> About</div>
+            <br></br>
+            <div style={{"font-size": 18}}> Our website gives you information on different health insurance plans based on specific criteria, 
+              using datasets from the US Department of Health and Human Services on health and dental plans offered 
+              to individuals and small businesses through the US Health Insurance Marketplace. </div>
+            <br></br>
+            <div style={{"font-size": 18}}> - Recommendations page finds the best insurance plans for you based on your personal information</div>
+            <br></br>
+            <div style={{"font-size": 18}}> - State page shows you insurance statistics for the state of your choice</div>
+            <br></br>
+            <div style={{"font-size": 18}}> - Benefits page shows you year-specific statistics and yearly price changes for the benefit category of your choice</div>
+            <br></br>
+            <div style={{"font-size": 18}}> - Provider page shows you provider-specific statistics for the year of your choice</div>
+            <br></br>
+            <div style={{"font-size": 18}}> - If there is any insurance-related term that you don't understand, you can consult the Health Insurance Dictionary Chatbot
+              at the bottom left of the page
+            </div>
+          </div>
+          
 
           <div className="jumbotron">
             <div className="h5">Plan Benefits Category Distribution (Top 10)</div>
@@ -85,9 +107,6 @@ export default class About extends React.Component {
             </div>
           </div>
           <br/>
-          <div className="jumbotron">
-              More stuff here
-          </div>
         </div>
       </div>
     );
