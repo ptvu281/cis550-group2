@@ -111,7 +111,7 @@ export default class Benefit extends React.Component {
           console.log(ben2List); //displays your JSON object in the console
           if (!ben2List) return;
           let ben2Divs = ben2List.map((ben2Obj, i) =>
-            <BenefitRow2 key={i} four={ben2Obj.four} five={ben2Obj.five} six={ben2Obj.six}/>
+            <BenefitRow2 key={i} BusinessYear={ben2Obj.BusinessYear} stat={ben2Obj.stat}/>
           );
           //This saves our HTML representation of the data into the state, which we can call in our render function
           this.setState({
@@ -189,9 +189,8 @@ export default class Benefit extends React.Component {
                     <table id='dtable' class="fl-table">
                         <thead>
                         <tr>
-                            <th>2014</th>
-                            <th>2015</th>
-                            <th>2016</th>
+                            <th>Year</th>
+                            <th>Statistic Value</th>
                         </tr>
                         </thead>
                         <tbody>

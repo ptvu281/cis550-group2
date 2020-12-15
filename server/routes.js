@@ -79,45 +79,24 @@ function getBen1(req, res) {
   })
 };
 
-//3.71 seconds in mysql
-//used temporary tables for each year to optimize, then used case whens to ensure
-//no unecessary aggregation is done.
+//3.71 seconds before
+//2.39 seconds now
+//Before data was set as each year as a column. This was much more inefficient
+//And had much more joins. Now, we set it as years in one column, stat in the other for
+//more efficient running.
 function getBen2(req, res) {
   var inputBenefit = req.params.selectedBenefit;
   var inputStats = req.params.selectedStats;
   var query = `
-  WITH 2014_stats AS
-  (SELECT
+  SELECT BusinessYear,
   CASE
-  WHEN	'${inputStats}' = 'Average' THEN CAST(AVG(IndividualRate) AS DECIMAL(10,2))
+  WHEN '${inputStats}' = 'Average' THEN CAST(AVG(IndividualRate) AS DECIMAL(10,2))
   WHEN '${inputStats}' = 'Min' THEN CAST(MIN(IndividualRate) AS DECIMAL(10,2))
   WHEN '${inputStats}' = 'Max' THEN CAST(MAX(IndividualRate) AS DECIMAL(10,2))
-  END AS four
+  END AS stat
   FROM Benefits JOIN Rates ON Rates.PlanId = Benefits.PlanId
-  WHERE Benefits.Category = '${inputBenefit}' AND BusinessYear = 2014),
-
-  2015_stats AS
-  (SELECT
-  CASE
-  WHEN	 '${inputStats}' = 'Average' THEN CAST(AVG(IndividualRate) AS DECIMAL(10,2))
-  WHEN '${inputStats}' = 'Min' THEN CAST(MIN(IndividualRate) AS DECIMAL(10,2))
-  WHEN '${inputStats}' = 'Max' THEN CAST(MAX(IndividualRate) AS DECIMAL(10,2))
-  END AS five
-  FROM Benefits JOIN Rates ON Rates.PlanId = Benefits.PlanId
-  WHERE Benefits.Category = '${inputBenefit}' AND BusinessYear = 2015),
-
-  2016_stats AS
-  (SELECT
-  CASE
-  WHEN	 '${inputStats}' = 'Average' THEN CAST(AVG(IndividualRate) AS DECIMAL(10,2))
-  WHEN '${inputStats}' = 'Min' THEN CAST(MIN(IndividualRate) AS DECIMAL(10,2))
-  WHEN '${inputStats}' = 'Max' THEN CAST(MAX(IndividualRate) AS DECIMAL(10,2))
-  END AS six
-  FROM Benefits JOIN Rates ON Rates.PlanId = Benefits.PlanId
-  WHERE Benefits.Category = '${inputBenefit}' AND BusinessYear = 2016)
-
-  SELECT 2014_stats.four, 2015_stats.five, 2016_stats.six
-  FROM 2014_stats, 2015_stats, 2016_stats`;
+  WHERE Benefits.Category = '${inputBenefit}'
+  GROUP BY BusinessYear;`;
 
   connection.query(query, function(err, rows, fields){
     if(err) console.log(err);
