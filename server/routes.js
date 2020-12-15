@@ -25,7 +25,7 @@ function getRecs(req, res) {
   r AS
   (SELECT PlanId AS planid, CAST(Rates.IndividualRate AS DECIMAL(10,2)) AS indvrate
   FROM Rates
-  WHERE Rates.Age = '${inputAge}),
+  WHERE Rates.Age = '${inputAge}'),
 
   n AS
   (SELECT PlanId AS planid, Network.NetworkName AS network
