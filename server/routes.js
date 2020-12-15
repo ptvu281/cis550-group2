@@ -177,33 +177,38 @@ function getProvider(req, res) {
 
   var query = `
 
-  WITH total_count AS
-  (SELECT Plan.PlanId, Network.NetworkName, COUNT(BenefitName) AS cnt
-  FROM Plan
-  JOIN Network ON Network.IssuerId=Plan.IssuerId
-  JOIN Benefits ON Plan.PlanId = Benefits.PlanId
-  WHERE Plan.StateCode = '${inputState}'
-  AND Plan.BusinessYear = '${inputYear}'
-  GROUP BY NetworkName, PlanId
-  ORDER BY COUNT(BenefitName) DESC),
+  WITH tmp1 as(
+		SELECT AfterJoin.NetworkName, MyBenefits.*
+        FROM (SELECT BenefitName, PlanId, CopayOutofNetAmount, CoinsOutofNet
+				FROM Benefits) MyBenefits 
+        JOIN (SELECT PlanId, NetworkName
+				FROM (SELECT PlanId, IssuerId
+						FROM Plan
+						WHERE StateCode='${inputState}' AND BusinessYear = '${inputYear}') MyPlan
+				JOIN (SELECT IssuerId, NetworkName 
+						FROM Network) MyNetwork 
+				ON MyNetwork.IssuerId = MyPlan.IssuerId) AfterJoin
+		ON AfterJoin.PlanId = MyBenefits.PlanId
+),
 
+	total_count AS
+  (SELECT tmp1.PlanId, tmp1.NetworkName, COUNT(tmp1.BenefitName) AS cnt
+  FROM tmp1
+  GROUP BY tmp1.NetworkName, tmp1.PlanId),
+  
   avg_num_benefits AS
   (SELECT NetworkName, CEILING(AVG(cnt)) avg_num
   FROM total_count
   GROUP BY NetworkName)
 
-  SELECT Network.NetworkName AS name,
-  CAST(AVG(CopayOutofNetAmount)AS DECIMAL(10,2)) AS avg_copay,
-  CAST(AVG(CoinsOutofNet) AS DECIMAL(10,2)) AS avg_coins,
-  COUNT(Plan.PlanId) AS num_plans,
+  SELECT tmp1.NetworkName AS name,
+  CAST(AVG(tmp1.CopayOutofNetAmount)AS DECIMAL(10,2)) AS avg_copay,
+  CAST(AVG(tmp1.CoinsOutofNet) AS DECIMAL(10,2)) AS avg_coins,
+  COUNT(tmp1.PlanId) AS num_plans,
   avg_num
-  FROM Network
-  JOIN Plan ON Network.IssuerId=Plan.IssuerId
-  JOIN Benefits ON Plan.PlanId = Benefits.PlanId
-  JOIN avg_num_benefits ON avg_num_benefits.NetworkName=Network.NetworkName
-  WHERE Plan.StateCode = '${inputState}'
-  AND Plan.BusinessYear = '${inputYear}'
-  GROUP BY Network.NetworkName
+  FROM tmp1
+  JOIN avg_num_benefits ON avg_num_benefits.NetworkName=tmp1.NetworkName
+  GROUP BY tmp1.NetworkName
   ORDER BY avg_num DESC, num_plans DESC;`;
 
   connection.query(query, function(err, rows, fields){
