@@ -9,9 +9,8 @@ export default class BenefitRow2 extends React.Component {
 	render() {
 		return (
 			<tr>
-					<td>{this.props.four}</td>
-					<td>{this.props.five}</td>
-					<td>{this.props.six}</td>
+					<td>{this.props.BusinessYear}</td>
+					<td>{this.props.stat}</td>
 			</tr>
 		);
 	}

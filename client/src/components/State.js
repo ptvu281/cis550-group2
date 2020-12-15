@@ -178,7 +178,7 @@ export default class State extends React.Component {
 
 
 				<br></br>
-				<div className="container recommendations-container">	
+				<div className="container recommendations-container">
 					<div className="jumbotron">
 						<div className="h5">Average Statistics per Benefit Category per State</div>
 						<div className="input-container">
@@ -204,7 +204,7 @@ export default class State extends React.Component {
 											<th>Benefit Category</th>
 											<th>Average Individual Rate</th>
 											<th>Average Copay out of Net</th>
-											<th>Above Average # of Benefits?</th>
+											<th>Above Nation Average # of Benefits?</th>
 									</tr>
 									</thead>
 									<tbody>

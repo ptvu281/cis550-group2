@@ -152,7 +152,7 @@ export default class Provider extends React.Component {
 																			<th>Average Individual Rate</th>
 																			<th>Average Copay out of Net</th>
 																			<th># of Plans</th>
-																			<th>Above Average # of Benefits</th>
+																			<th>Average # of Benefits</th>
 		              									</tr>
 		              									</thead>
 		              									<tbody>
