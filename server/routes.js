@@ -61,28 +61,16 @@ function getBen1(req, res) {
   var inputYear = req.params.selectedYear;
   var inputOpt = req.params.selectedOption;
   var query = `
-  SELECT Category, BenefitName, CAST(AVG(IndividualRate) AS DECIMAL(10,2)) AS avg
-  FROM (SELECT PlanId, BenefitName, Category
-  FROM Benefits
-  WHERE BusinessYear = '${inputYear}') MyBenefits
-  JOIN (SELECT IndividualRate, PlanId
-  FROM Rates) MyRates
-  ON MyRates.PlanId = MyBenefits.PlanId
-  GROUP BY BenefitName
-  ORDER BY
-  CASE WHEN '${inputOpt}' = "Most Affordable Benefits" THEN avg END ASC,
-  CASE WHEN '${inputOpt}' = "Most Expensive Benefits" THEN avg END DESC,
-  CASE WHEN '${inputOpt}' = "Most Frequent Benefits" THEN COUNT(BenefitName) END DESC
-  LIMIT 5;`;
-
-  connection.query(query, function(err, rows, fields){
-    if(err) console.log(err);
-    else{
-      res.json(rows)
-    }
-  })
-};
-
+    SELECT Category, BenefitName, CAST(AVG(IndividualRate) AS DECIMAL(10,2)) AS avg
+    FROM Benefits JOIN Rates ON Rates.PlanId = Benefits.PlanId
+    WHERE BusinessYear = '${inputYear}'
+    GROUP BY BenefitName
+    ORDER BY
+    CASE WHEN '${inputOpt}' = "Most Affordable Benefits" THEN avg END ASC,
+    CASE WHEN '${inputOpt}' = "Most Expensive Benefits" THEN avg END DESC,
+    CASE WHEN '${inputOpt}' = "Most Frequent Benefits" THEN COUNT(BenefitName) END DESC
+    LIMIT 5`;
+    
 //3.71 seconds before
 //2.39 seconds now
 //Before data was set as each year as a column. This was much more inefficient
@@ -181,13 +169,13 @@ function getProvider(req, res) {
   WITH tmp1 as(
 		SELECT AfterJoin.NetworkName, MyBenefits.*
         FROM (SELECT BenefitName, PlanId, CopayOutofNetAmount, CoinsOutofNet
-				FROM Benefits) MyBenefits 
+				FROM Benefits) MyBenefits
         JOIN (SELECT PlanId, NetworkName
 				FROM (SELECT PlanId, IssuerId
 						FROM Plan
 						WHERE StateCode='${inputState}' AND BusinessYear = '${inputYear}') MyPlan
-				JOIN (SELECT IssuerId, NetworkName 
-						FROM Network) MyNetwork 
+				JOIN (SELECT IssuerId, NetworkName
+						FROM Network) MyNetwork
 				ON MyNetwork.IssuerId = MyPlan.IssuerId) AfterJoin
 		ON AfterJoin.PlanId = MyBenefits.PlanId
 ),
@@ -196,7 +184,7 @@ function getProvider(req, res) {
   (SELECT tmp1.PlanId, tmp1.NetworkName, COUNT(tmp1.BenefitName) AS cnt
   FROM tmp1
   GROUP BY tmp1.NetworkName, tmp1.PlanId),
-  
+
   avg_num_benefits AS
   (SELECT NetworkName, CEILING(AVG(cnt)) avg_num
   FROM total_count
