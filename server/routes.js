@@ -61,15 +61,19 @@ function getBen1(req, res) {
   var inputYear = req.params.selectedYear;
   var inputOpt = req.params.selectedOption;
   var query = `
-    SELECT Category, BenefitName, CAST(AVG(IndividualRate) AS DECIMAL(10,2)) AS avg
-    FROM Benefits JOIN Rates ON Rates.PlanId = Benefits.PlanId
-    WHERE BusinessYear = '${inputYear}'
-    GROUP BY BenefitName
-    ORDER BY
-    CASE WHEN '${inputOpt}' = "Most Affordable Benefits" THEN avg END ASC,
-    CASE WHEN '${inputOpt}' = "Most Expensive Benefits" THEN avg END DESC,
-    CASE WHEN '${inputOpt}' = "Most Frequent Benefits" THEN COUNT(BenefitName) END DESC
-    LIMIT 5`;
+  SELECT Category, BenefitName, CAST(AVG(IndividualRate) AS DECIMAL(10,2)) AS avg
+  FROM (SELECT PlanId, BenefitName, Category
+  FROM Benefits
+  WHERE BusinessYear = '${inputYear}') MyBenefits
+  JOIN (SELECT IndividualRate, PlanId
+  FROM Rates) MyRates
+  ON MyRates.PlanId = MyBenefits.PlanId
+  GROUP BY BenefitName
+  ORDER BY
+  CASE WHEN '${inputOpt}' = "Most Affordable Benefits" THEN avg END ASC,
+  CASE WHEN '${inputOpt}' = "Most Expensive Benefits" THEN avg END DESC,
+  CASE WHEN '${inputOpt}' = "Most Frequent Benefits" THEN COUNT(BenefitName) END DESC
+  LIMIT 5;`;
 
   connection.query(query, function(err, rows, fields){
     if(err) console.log(err);
