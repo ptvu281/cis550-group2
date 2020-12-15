@@ -6,9 +6,9 @@ export const Category = (props) => {
         <Chart
             options=  {{
                 labels: props.labels,
-                colors: ["#378aff", "#fba330", "#f54f52", "#92f03b", "#9552ea",
+                colors: ["#378aff", "#fbbc45", "#f54f52", "#4FC3A1", "#9552ea",
                     "#0c3f5c", "#58508d", "#bc5090", "#fb6361", "#fba600",
-                    "#c608d1", "#fe02fe", "#fe77fd", "#fea9fd", "#2900a5"
+                    "#324960", "#fe02fe", "#324960", "#fea9fd", "#2900a5"
                 ]
             }}
             series={props.series}
@@ -41,7 +41,7 @@ export const RevenueBar = (props) => {
                     stroke: {
                         width: [4, 4, 4],
                     },
-                    colors: ["#fbbc45", "#40a0fc", "#37e7a5"],
+                    colors: ["#fbbc45", "#4FC3A1", "#324960"],
                     dataLabels: {
                         enabled: true,
                         enabledOnSeries: []
@@ -105,7 +105,7 @@ export const SalaryBar = (props) => {
                     chart: {
                         type: 'line',
                     },
-                    colors: ["#43335a"],
+                    colors: ["#324960"],
                     dataLabels: {
                         enabled: false,
                         enabledOnSeries: [0]

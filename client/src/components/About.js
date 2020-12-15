@@ -8,32 +8,34 @@ export default class About extends React.Component {
   constructor(props) {
     super(props);
 
-    // The state maintained by this React Component. This component maintains the list of genres,
-    // and a list of movies for a specified genre.
-    let categoryList = ["Surgery", "Chronic Diseases", "Medication", "Maternity Care", "Mental Health",
-    "Specialist", "Rehabilitation", "Other Health Services"];
-    
-    let percentList = [0.0975, 0.0960, 0.0907, 0.0747, 0.0739, 0.0613, 0.0523, 0.4536]
     this.state ={
-      categoryList: categoryList,
-      percentList: percentList,
+      categoryList: [],
+      percentList: [],
     }
   }
 
   //Please help me check this. It couldn't work
   componentDidMount() {
-		fetch("http://localhost:3000/about", {
+		fetch("http://localhost:8081/about", {
 			method: "GET"
 		  })
 			.then(res => res.json())
-			.then(categoryList => {
-				console.log(categoryList); //displays your JSON object in the console
-				if (!categoryList) return;
-
-				//This saves our HTML representation of the data into the state, which we can call in our render function
+			.then(allList => {
+				console.log(allList); //displays your JSON object in the console
+        if (!allList) return;
+        var categoryList = [];
+        var percentList = [];
+        allList.map((allObj, i) => {
+          categoryList.push(allObj.Category);
+          percentList.push(allObj.Percent);
+        });
+				// This saves our HTML representation of the data into the state, which we can call in our render function
 				this.setState({
-					categorys: categoryList
-				});
+          categoryList: categoryList,
+          percentList: percentList
+        });
+        console.log(categoryList);
+        console.log(percentList);
 			})
 			.catch(err => console.log(err))
   }
@@ -56,7 +58,7 @@ export default class About extends React.Component {
           <br></br>
 
           <div className="jumbotron">
-            <div className="h5">Plan Benefits' Category Distribution</div>
+            <div className="h5">Plan Benefits Category Distribution (Top 10)</div>
             <Category
               height="200"
               labels={this.state.categoryList}
@@ -64,19 +66,23 @@ export default class About extends React.Component {
             />
           </div>
           <br/>
-          <div className="jumbotron">
-            <RevenueBar
-              labels={["2014", "2015", "2016"]}
-              issuerNetworkNum={[764, 1301, 1266]}
-              planNum={[18689, 31253, 27381]}
-              individualRate={[186.12, 185.94, 192.04]}
-            />
-          </div>
-          <div className="jumbotron">
-            <SalaryBar
+          <div className="jumbotron container">
+            <div className="row">
+              <div className="col-lg-6">
+                <RevenueBar
+                  labels={["2014", "2015", "2016"]}
+                  issuerNetworkNum={[764, 1301, 1266]}
+                  planNum={[18689, 31253, 27381]}
+                  individualRate={[186.12, 185.94, 192.04]}
+                />
+              </div>
+              <div className="col-lg-6">
+              <SalaryBar
                 labels={["WI", "TX", "FL", "OH", "IL", "PA", "AZ", "MI", "GA", "IN", "VA"]}
                 salaryData={[7135, 6441, 5130, 5092, 4299, 4208, 3345, 3248, 2893, 2347, 2256]}
-            />
+              />
+              </div>
+            </div>
           </div>
           <br/>
           <div className="jumbotron">

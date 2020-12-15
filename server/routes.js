@@ -129,7 +129,8 @@ function getState1(req, res) {
   connection.query(query, function(err, rows, fields){
     if(err) console.log(err);
     else{
-      res.json(rows)
+      res.json(rows);
+      console.log(rows);
     }
   })
 };
@@ -224,7 +225,7 @@ function getCategory(req, res){
   SELECT Category, num/2777947 AS Percent
   FROM cte
   order by Percent desc
-  limit 10;
+  limit 10
   `;
   
   connection.query(query, function(err, rows, fields){
@@ -234,6 +235,7 @@ function getCategory(req, res){
     }
   })
 };
+
 
 // The exported functions, which can be accessed in index.js.
 module.exports = {
