@@ -9,31 +9,43 @@ var connection = mysql.createPool(config);
 /* -------------------------------------------------- */
 
 /* ---- ONES WE ACTUALLY USE CLEAN UP REST LATER ---- */
+//Raw Query runs 0.73s before optimization, time probably from front end putting in data table
+//Version with temp table optimization is around 0.5s
 function getRecs(req, res) {
   var inputLocation = req.params.location;
   var inputAge = req.params.age;
   var inputBenefit = req.params.benefit;
   var inputFamily = req.params.family;
   var query = `
-    SELECT DISTINCT Plan.PlanId AS planid, Benefits.BenefitName AS benefit, Network.NetworkName AS network,
-    Benefits.CopayOutofNetAmount AS copayoon, Benefits.CoinsOutofNet AS coinsoon, CAST(Rates.IndividualRate AS DECIMAL(10,2)) AS indvrate,
-    CASE
-      WHEN '${inputFamily}' = "Couple" THEN IFNULL(CAST(FamilyOption.Couple AS DECIMAL(10,2)), "No group rate found.")
-      WHEN '${inputFamily}' = "Primary Subscriber And One Dependent" THEN IFNULL(CAST(FamilyOption.PrimarySubscriberAndOneDependent AS DECIMAL(10,2)), "No group rate found.")
-      WHEN '${inputFamily}' = "Primary Subscriber And Two Dependents" THEN IFNULL(CAST(FamilyOption.PrimarySubscriberAndTwoDependents AS DECIMAL(10,2)), "No group rate found.")
-      WHEN '${inputFamily}' = "Primary Subscriber And Three Or More Dependents" THEN IFNULL(CAST(FamilyOption.PrimarySubscriberAndThreeOrMoreDependents AS DECIMAL(10,2)), "No group rate found.")
-      WHEN '${inputFamily}' = "Couple And One Dependent" THEN IFNULL(CAST(FamilyOption.CoupleAndOneDependent AS DECIMAL(10,2)), "No group rate found.")
-      ELSE 'Not Applicable'
-    END AS grouprate
-    FROM Plan JOIN Rates ON Plan.PlanId = Rates.PlanId
-    JOIN Benefits ON Plan.PlanId = Benefits.PlanId
-    LEFT OUTER JOIN FamilyOption ON Plan.PlanId = FamilyOption.PlanId
-    JOIN Network ON Plan.IssuerId = Network.IssuerId
-    WHERE Plan.StateCode = '${inputLocation}' AND
-    Rates.Age = '${inputAge}' AND
-    Benefits.Category = '${inputBenefit}'
-    AND Plan.BusinessYear = 2016
-    ORDER BY benefit, indvrate ASC, grouprate ASC`;
+  WITH b AS
+  (SELECT PlanId AS planid, BenefitName AS benefit, Benefits.CopayOutofNetAmount AS copayoon, Benefits.CoinsOutofNet AS coinsoon
+  FROM Benefits
+  WHERE Benefits.Category = '${inputBenefit}'),
+
+  r AS
+  (SELECT PlanId AS planid, CAST(Rates.IndividualRate AS DECIMAL(10,2)) AS indvrate
+  FROM Rates
+  WHERE Rates.Age = '${inputAge}),
+
+  n AS
+  (SELECT PlanId AS planid, Network.NetworkName AS network
+  FROM Plan JOIN Network ON Plan.IssuerId = Network.IssuerId
+  WHERE Plan.StateCode = '${inputLocation}' AND Plan.BusinessYear = 2016),
+
+  f AS
+  (SELECT PlanId AS planid, CASE
+    WHEN '${inputFamily}' = "Couple" THEN IFNULL(CAST(FamilyOption.Couple AS DECIMAL(10,2)), "No group rate found.")
+    WHEN '${inputFamily}' = "Primary Subscriber And One Dependent" THEN IFNULL(CAST(FamilyOption.PrimarySubscriberAndOneDependent AS DECIMAL(10,2)), "No group rate found.")
+    WHEN '${inputFamily}' = "Primary Subscriber And Two Dependents" THEN IFNULL(CAST(FamilyOption.PrimarySubscriberAndTwoDependents AS DECIMAL(10,2)), "No group rate found.")
+    WHEN '${inputFamily}' = "Primary Subscriber And Three Or More Dependents" THEN IFNULL(CAST(FamilyOption.PrimarySubscriberAndThreeOrMoreDependents AS DECIMAL(10,2)), "No group rate found.")
+    WHEN '${inputFamily}' = "Couple And One Dependent" THEN IFNULL(CAST(FamilyOption.CoupleAndOneDependent AS DECIMAL(10,2)), "No group rate found.")
+    ELSE 'Not Applicable'
+  END AS grouprate
+  FROM FamilyOption)
+
+  SELECT DISTINCT b.planid, benefit, network, copayoon, coinsoon, indvrate, grouprate
+  FROM b JOIN r ON b.planid=r.planid JOIN n ON n.planid=b.planid LEFT OUTER JOIN f ON f.planid=b.planid
+  ORDER BY benefit, indvrate ASC, grouprate ASC`;
 
   connection.query(query, function(err, rows, fields){
     if(err) console.log(err);
@@ -43,7 +55,8 @@ function getRecs(req, res) {
   })
 };
 
-//Managed to cut the time down to ~5 seconds
+//Managed to cut the time down to 4.39 seconds by using case when in the order by instead of
+//calculating 3 seperate tables for each
 function getBen1(req, res) {
   var inputYear = req.params.selectedYear;
   var inputOpt = req.params.selectedOption;
@@ -66,6 +79,9 @@ function getBen1(req, res) {
   })
 };
 
+//3.71 seconds in mysql
+//used temporary tables for each year to optimize, then used case whens to ensure
+//no unecessary aggregation is done.
 function getBen2(req, res) {
   var inputBenefit = req.params.selectedBenefit;
   var inputStats = req.params.selectedStats;
@@ -73,7 +89,7 @@ function getBen2(req, res) {
   WITH 2014_stats AS
   (SELECT
   CASE
-  WHEN	 '${inputStats}' = 'Average' THEN CAST(AVG(IndividualRate) AS DECIMAL(10,2))
+  WHEN	'${inputStats}' = 'Average' THEN CAST(AVG(IndividualRate) AS DECIMAL(10,2))
   WHEN '${inputStats}' = 'Min' THEN CAST(MIN(IndividualRate) AS DECIMAL(10,2))
   WHEN '${inputStats}' = 'Max' THEN CAST(MAX(IndividualRate) AS DECIMAL(10,2))
   END AS four
@@ -227,7 +243,7 @@ function getCategory(req, res){
   order by Percent desc
   limit 10
   `;
-  
+
   connection.query(query, function(err, rows, fields){
     if(err) console.log(err);
     else{
