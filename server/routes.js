@@ -96,7 +96,7 @@ function getBen2(req, res) {
   END AS stat
   FROM Benefits JOIN Rates ON Rates.PlanId = Benefits.PlanId
   WHERE Benefits.Category = '${inputBenefit}'
-  GROUP BY BusinessYear;`;
+  GROUP BY BusinessYear`;
 
   connection.query(query, function(err, rows, fields){
     if(err) console.log(err);
@@ -173,7 +173,6 @@ function getProvider(req, res) {
   var inputYear = req.params.selectedYear;
 
   var query = `
-
   WITH total_count AS
   (SELECT Plan.PlanId, Network.NetworkName, COUNT(BenefitName) AS cnt
   FROM Plan
@@ -192,8 +191,7 @@ function getProvider(req, res) {
   SELECT Network.NetworkName AS name,
   CAST(AVG(CopayOutofNetAmount)AS DECIMAL(10,2)) AS avg_copay,
   CAST(AVG(CoinsOutofNet) AS DECIMAL(10,2)) AS avg_coins,
-  COUNT(Plan.PlanId) AS num_plans,
-  avg_num
+  COUNT(Plan.PlanId) AS num_plans, avg_num
   FROM Network
   JOIN Plan ON Network.IssuerId=Plan.IssuerId
   JOIN Benefits ON Plan.PlanId = Benefits.PlanId
@@ -201,7 +199,7 @@ function getProvider(req, res) {
   WHERE Plan.StateCode = '${inputState}'
   AND Plan.BusinessYear = '${inputYear}'
   GROUP BY Network.NetworkName
-  ORDER BY avg_num DESC, num_plans DESC;`;
+  ORDER BY avg_num DESC, num_plans DESC`;
 
   connection.query(query, function(err, rows, fields){
     if(err) console.log(err);
